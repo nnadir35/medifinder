@@ -1,57 +1,57 @@
-# MediFinder
+# MediFinder — Provider Search Case Study
 
-A global healthcare provider discovery platform built with Flutter. MediFinder helps patients find and connect with verified medical specialists worldwide — filtering by country, city, and specialty — with a clean, accessible interface that works in both light and dark mode.
+MediFinder is a global healthcare discovery platform that connects patients with verified medical specialists worldwide. This case study implements a 3-screen provider search flow — list, filter, and detail — demonstrating Clean Architecture, Bloc state management, and Material 3 theming in Flutter with no backend dependency.
 
 ---
 
 ## Architecture
 
-MediFinder follows **Clean Architecture** with three layers:
+MediFinder uses **Clean Architecture** with three distinct layers:
 
-```
-Presentation  →  Domain  →  Data
-(Bloc, Screens, Widgets)   (Entities)   (Models, Mock)
-```
+- **Domain** — pure Dart entities (`ProviderEntity`, `FilterState`). No Flutter imports. No knowledge of data sources or UI. This is the stable core that survives backend swaps unchanged.
+- **Data** — `ProviderModel` extends `ProviderEntity` and adds `fromMap`/`toMap` for future-proofing. All data is currently mocked via `mockProviders`.
+- **Presentation** — Bloc drives all state transitions. Screens and widgets are purely reactive and never mutate state directly.
 
-- **Domain** — pure Dart entities (`ProviderEntity`, `FilterState`). No Flutter imports. No dependencies on data or presentation.
-- **Data** — `ProviderModel` extends `ProviderEntity` and adds `fromMap`/`toMap`. Mock data lives here and is the only data source.
-- **Presentation** — Bloc drives all state. Screens and widgets are purely reactive.
+**Why Clean Architecture?** Separation of concerns means each layer has a single reason to change. Swapping the mock data for a real REST API requires touching only the data layer. UI refactors never cascade into business logic. Each layer can be tested in isolation.
 
-### Why Bloc over Cubit / Provider / Riverpod?
+**Why Bloc over Cubit / Provider / Riverpod?**
 
-| Concern | Decision |
+| Concern | Bloc advantage |
 |---|---|
-| Explicit event types | `sealed class ProviderEvent` makes every user action traceable and testable |
-| State transitions | `sealed class ProviderState` exhaustively handled in `switch` — no runtime surprises |
-| Scalability | Adding a new feature (e.g. bookmarks) means adding one event + one state subclass, not changing existing code |
-| Separation | UI never mutates state directly — it dispatches events |
-
-### Why `FilterState` is a data class inside `ProviderLoaded` (not a separate Bloc state)
-
-Filters are not a lifecycle phase — they are data carried by the loaded state. Embedding `FilterState` inside `ProviderLoaded` means:
-- A single `BlocBuilder` rebuilds the list and the filter badge atomically.
-- No risk of a filter state existing while providers haven't loaded yet.
-- `FilterState.isEmpty` gives the UI a single truth for showing/hiding active filter UI.
+| Traceability | Every user action is an explicit `sealed class` event — you can log, replay, or test each one independently |
+| Exhaustive states | `sealed class ProviderState` forces exhaustive `switch` expressions at every call site — the Dart 3 compiler catches missing cases |
+| Unit testing | `bloc_test`'s `blocTest()` lets you seed any state, dispatch a single event, and assert the exact emitted states — no widget tree needed |
+| Scalability | Adding a feature (e.g. bookmarks) means adding one event subclass and one state subclass without touching existing handlers |
 
 ---
 
-## State Management Flow
+## State Management
+
+**Event → Bloc → State flow:**
 
 ```
-User action
+User action (e.g. selects a country filter)
     │
     ▼
-ProviderEvent  (e.g. ProviderFilterApplied)
+ProviderFilterApplied(FilterState(...))   ← dispatched from UI
     │
     ▼
 ProviderBloc._applyFilters(all, query, filter)
     │
     ▼
-ProviderLoaded(filteredProviders: [...], activeFilter: ...)
+emit(ProviderLoaded(filteredProviders: [...], activeFilter: ...))
     │
     ▼
-BlocBuilder rebuilds ListView / filter chips
+BlocBuilder rebuilds ListView + active filter chip row
 ```
+
+**Why `FilterState` is a plain data class inside `ProviderLoaded` (not a separate Bloc):**
+
+Filters have no async side effects — they are derived purely from user interaction and applied synchronously against the already-loaded provider list. Embedding `FilterState` inside `ProviderLoaded` means:
+
+- There is no valid state where a filter exists but providers haven't loaded — the types make this impossible.
+- A single `BlocBuilder` rebuilds the list and the filter badge atomically, with no Bloc-to-Bloc communication needed.
+- `FilterState.isEmpty` is a single source of truth for showing/hiding active filter UI.
 
 ---
 
@@ -61,33 +61,33 @@ BlocBuilder rebuilds ListView / filter chips
 lib/
 ├── core/
 │   ├── error/
-│   │   ├── exceptions.dart        # ServerException, NetworkException, …
-│   │   └── failures.dart          # Failure subclasses (Equatable)
+│   │   ├── exceptions.dart           # ServerException, NetworkException, …
+│   │   └── failures.dart             # Failure subclasses (Equatable)
 │   ├── router/
-│   │   └── app_router.dart        # GoRouter — 2 routes
+│   │   └── app_router.dart           # GoRouter — 2 routes
 │   ├── theme/
-│   │   ├── app_theme.dart         # AppTheme.light / .dark (Material 3)
+│   │   ├── app_theme.dart            # AppTheme.light / .dark (Material 3)
 │   │   └── app_theme_extension.dart  # Spacing/radius tokens + BuildContext ext
 │   └── utils/
-│       ├── constants.dart         # AppConstants (SharedPrefs keys, pagination)
-│       └── extensions.dart        # ContextX, StringX, NullableStringX
+│       ├── constants.dart            # AppConstants (SharedPrefs keys, pagination)
+│       └── extensions.dart           # ContextX, StringX, NullableStringX
 │
 ├── features/
 │   └── providers/
 │       ├── data/
 │       │   ├── mock/
-│       │   │   └── mock_providers.dart   # 16 ProviderModel entries
+│       │   │   └── mock_providers.dart    # 16 ProviderModel entries
 │       │   └── models/
-│       │       └── provider_model.dart   # fromMap / toMap
+│       │       └── provider_model.dart    # fromMap / toMap
 │       ├── domain/
 │       │   └── entities/
-│       │       ├── provider_entity.dart  # Core entity (Equatable)
-│       │       └── filter_state.dart     # Filter data class (Equatable)
+│       │       ├── provider_entity.dart   # Core entity (Equatable)
+│       │       └── filter_state.dart      # Filter data class (Equatable)
 │       └── presentation/
 │           ├── bloc/
 │           │   ├── provider_bloc.dart
-│           │   ├── provider_event.dart   # sealed class
-│           │   └── provider_state.dart   # sealed class
+│           │   ├── provider_event.dart    # sealed class
+│           │   └── provider_state.dart    # sealed class
 │           ├── screens/
 │           │   ├── provider_list_screen.dart
 │           │   └── provider_detail_screen.dart
@@ -96,11 +96,11 @@ lib/
 │               ├── rating_stars.dart      # filled / half / empty stars
 │               ├── provider_card.dart     # Hero + card layout
 │               ├── filter_chip_group.dart # Reusable chip group
-│               ├── loading_shimmer.dart   # Animated shimmer placeholder
+│               ├── loading_shimmer.dart   # Theme-aware animated shimmer
 │               ├── empty_state.dart       # No results UI
 │               └── error_state.dart       # Error + retry UI
 │
-└── main.dart   # MediFinderApp — BlocProvider + GoRouter + theme notifier
+└── main.dart   # MediFinderApp — BlocProvider + GoRouter + ValueNotifier<ThemeMode>
 ```
 
 ---
@@ -108,14 +108,8 @@ lib/
 ## How to Run
 
 ```bash
-# Install dependencies
 flutter pub get
-
-# Run on a connected device or simulator
 flutter run
-
-# Analyse for issues
-flutter analyze
 ```
 
 Requires Flutter 3.x with Dart 3.x (tested on Flutter 3.29.2).
@@ -124,12 +118,8 @@ Requires Flutter 3.x with Dart 3.x (tested on Flutter 3.29.2).
 
 ## Key Technical Decisions
 
-| Decision | Rationale |
-|---|---|
-| **GoRouter** | Declarative routing with type-safe `extra` for passing `ProviderEntity` to detail screen; supports deep linking and web |
-| **Hero animation** | `provider.id` used as Hero tag on `ProviderAvatar` in both list card and detail header — gives a natural transition with zero extra code |
-| **Null safety throughout** | All nullable fields (`imageUrl`, `phone`, `website`, `bio`) are `String?`; every callsite guards with `if (x != null)` or null-aware operators |
-| **Spacing tokens** | `context.appTheme.spacingMd` etc. from `AppThemeExtension` — no hardcoded `padding` or `SizedBox` with magic numbers |
-| **Sealed classes** | Both `ProviderEvent` and `ProviderState` are `sealed` — the Dart compiler enforces exhaustive handling in every `switch`, eliminating missing-case bugs |
-| **`ValueNotifier<ThemeMode>`** | Simple global notifier for theme toggling without a full state management solution for a single bool; persisted to `SharedPreferences` |
-| **Mock-first data layer** | `ProviderModel.fromMap`/`toMap` future-proofs the data layer — swapping in a real API requires only adding a repository without touching domain or presentation |
+- **GoRouter** — Declarative routing with type-safe `extra` for passing `ProviderEntity` to the detail screen without re-fetching. Supports deep linking and web out of the box.
+- **Hero animation** — `provider.id` is used as the Hero tag on `ProviderAvatar` in both `ProviderCard` and `ProviderDetailScreen`, giving a natural shared-element transition with zero extra code.
+- **Null safety** — All nullable fields (`phone`, `website`, `bio`, `imageUrl`) are `String?`. Entire UI sections (contact, bio) are hidden when null rather than showing empty containers.
+- **Theme token system** — `AppThemeExtension` spacing and radius tokens are consumed via `context.appTheme` throughout all feature code. Zero hardcoded padding values exist in the feature layer.
+- **Sealed classes** — Both `ProviderEvent` and `ProviderState` are `sealed`. Every `switch` on `ProviderState` in the build methods is exhaustive — the Dart 3 compiler enforces completeness and will error if a new subclass is added without handling it everywhere.
