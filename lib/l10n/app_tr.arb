@@ -19,6 +19,7 @@
   "clearFiltersButton": "Filtreleri Temizle",
   "errorStateTitle": "Bir şeyler ters gitti",
   "retryButton": "Tekrar Dene",
+  "errorNetworkHint": "İnternet bağlantınızı kontrol edip tekrar deneyin.",
   "filterSheetTitle": "Filtreler",
   "clearAllButton": "Tümünü Temizle",
   "filterCountryLabel": "Ülke",

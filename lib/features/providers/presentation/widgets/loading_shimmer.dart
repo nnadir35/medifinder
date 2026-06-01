@@ -42,6 +42,8 @@ class _LoadingShimmerState extends State<LoadingShimmer>
         final shimmerColor = colorAnim.value ?? colorScheme.surfaceContainer;
         return ListView.builder(
           itemCount: 6,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           padding: EdgeInsets.symmetric(vertical: ext.spacingSm),
           itemBuilder: (_, __) => _ShimmerCard(color: shimmerColor, ext: ext),
         );

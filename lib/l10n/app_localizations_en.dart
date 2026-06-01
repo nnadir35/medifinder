@@ -72,6 +72,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retryButton => 'Retry';
 
   @override
+  String get errorNetworkHint =>
+      'Check your internet connection and try again.';
+
+  @override
   String get filterSheetTitle => 'Filters';
 
   @override

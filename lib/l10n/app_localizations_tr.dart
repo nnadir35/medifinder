@@ -73,6 +73,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get retryButton => 'Tekrar Dene';
 
   @override
+  String get errorNetworkHint =>
+      'İnternet bağlantınızı kontrol edip tekrar deneyin.';
+
+  @override
   String get filterSheetTitle => 'Filtreler';
 
   @override

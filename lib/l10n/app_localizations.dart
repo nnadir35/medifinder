@@ -212,6 +212,12 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retryButton;
 
+  /// No description provided for @errorNetworkHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection and try again.'**
+  String get errorNetworkHint;
+
   /// No description provided for @filterSheetTitle.
   ///
   /// In en, this message translates to:
