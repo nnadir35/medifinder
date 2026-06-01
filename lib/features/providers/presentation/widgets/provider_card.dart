@@ -21,91 +21,87 @@ class ProviderCard extends StatelessWidget {
     final text = Theme.of(context).textTheme;
 
     return Card(
-      margin: EdgeInsets.symmetric(
-        horizontal: ext.spacingMd,
-        vertical: ext.spacingSm / 2,
-      ),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(ext.radiusMd),
         child: Padding(
           padding: EdgeInsets.all(ext.spacingMd),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
             children: [
-              Hero(
-                tag: provider.id,
-                child: ProviderAvatar(
-                  name: provider.name,
-                  imageUrl: provider.imageUrl,
-                  radius: 30,
+              Center(
+                child: Hero(
+                  tag: provider.id,
+                  child: ProviderAvatar(
+                    name: provider.name,
+                    imageUrl: provider.imageUrl,
+                    radius: 32,
+                  ),
                 ),
               ),
-              SizedBox(width: ext.spacingMd),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            provider.name,
-                            style: text.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (provider.isVerified) ...[
-                          SizedBox(width: ext.spacingXs),
-                          Icon(
-                            Icons.verified_rounded,
-                            size: 18,
-                            color: colors.primary,
-                          ),
-                        ],
-                      ],
-                    ),
-                    SizedBox(height: ext.spacingXs),
-                    Chip(
-                      label: Text(
-                        provider.specialty,
-                        style: text.labelSmall,
+              SizedBox(height: ext.spacingSm),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      provider.name,
+                      style: text.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
-                      padding: EdgeInsets.zero,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: ext.spacingXs),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          size: 14,
-                          color: colors.onSurfaceVariant,
-                        ),
-                        SizedBox(width: ext.spacingXs / 2),
-                        Expanded(
-                          child: Text(
-                            '${provider.city}, ${provider.country}',
-                            style: text.bodySmall?.copyWith(
-                              color: colors.onSurfaceVariant,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
+                  ),
+                  if (provider.isVerified)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4, top: 1),
+                      child: Icon(
+                        Icons.verified_rounded,
+                        size: 14,
+                        color: colors.primary,
+                      ),
                     ),
-                    SizedBox(height: ext.spacingXs),
-                    RatingStars(
-                      rating: provider.rating,
-                      reviewCount: provider.reviewCount,
-                    ),
-                  ],
+                ],
+              ),
+              const SizedBox(height: 2),
+              Text(
+                provider.specialty,
+                style: text.bodySmall?.copyWith(
+                  color: colors.primary,
+                  fontWeight: FontWeight.w500,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 6),
+              RatingStars(
+                rating: provider.rating,
+                reviewCount: provider.reviewCount,
+                starSize: 12,
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 12,
+                    color: colors.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 2),
+                  Expanded(
+                    child: Text(
+                      '${provider.city}, ${provider.country}',
+                      style: text.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                        fontSize: 11,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
