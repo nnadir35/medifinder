@@ -1,0 +1,49 @@
+{
+  "@@locale": "en",
+  "appTitle": "MediFinder",
+  "heroTitle": "Search for\nSpecialized Care",
+  "heroSubtitle": "Refine results by specialty,\nlocation, and more",
+  "tooltipLightMode": "Light mode",
+  "tooltipDarkMode": "Dark mode",
+  "tooltipLanguage": "Change language",
+  "searchHint": "Search by name or specialty…",
+  "filtersLabel": "Filters",
+  "resultsCount": "{count} results",
+  "@resultsCount": {
+    "placeholders": {
+      "count": { "type": "String" }
+    }
+  },
+  "sortRelevance": "Relevance",
+  "providerNotFound": "Provider not found.",
+  "contactSectionTitle": "Contact",
+  "callingSnackbar": "Calling: {phone}",
+  "@callingSnackbar": {
+    "placeholders": {
+      "phone": { "type": "String" }
+    }
+  },
+  "openingSnackbar": "Opening: {website}",
+  "@openingSnackbar": {
+    "placeholders": {
+      "website": { "type": "String" }
+    }
+  },
+  "aboutSectionTitle": "About",
+  "emptyStateTitle": "No providers found",
+  "emptyStateMessage": "Try adjusting your search or filters.",
+  "clearFiltersButton": "Clear Filters",
+  "errorStateTitle": "Something went wrong",
+  "retryButton": "Retry",
+  "filterSheetTitle": "Filters",
+  "clearAllButton": "Clear All",
+  "filterCountryLabel": "Country",
+  "filterCityLabel": "City",
+  "filterSpecialtyLabel": "Specialty",
+  "showResultsButton": "Show {count} Results",
+  "@showResultsButton": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
+import 'package:medifinder/l10n/app_localizations.dart';
 
 class ErrorState extends StatelessWidget {
   const ErrorState({
@@ -16,6 +17,7 @@ class ErrorState extends StatelessWidget {
     final ext = context.appTheme;
     final colors = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Center(
       child: Padding(
@@ -26,7 +28,7 @@ class ErrorState extends StatelessWidget {
             Icon(Icons.error_outline_rounded, size: 64, color: colors.error),
             SizedBox(height: ext.spacingMd),
             Text(
-              'Something went wrong',
+              l10n.errorStateTitle,
               style: text.titleMedium?.copyWith(color: colors.error),
             ),
             SizedBox(height: ext.spacingSm),
@@ -38,7 +40,7 @@ class ErrorState extends StatelessWidget {
             SizedBox(height: ext.spacingLg),
             OutlinedButton(
               onPressed: onRetry,
-              child: const Text('Retry'),
+              child: Text(l10n.retryButton),
             ),
           ],
         ),

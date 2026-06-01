@@ -6,8 +6,10 @@ import 'package:medifinder/core/utils/constants.dart';
 import 'package:medifinder/features/providers/presentation/bloc/provider_bloc.dart';
 import 'package:medifinder/features/providers/presentation/bloc/provider_event.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:medifinder/l10n/app_localizations.dart';
 
 final themeModeNotifier = ValueNotifier<ThemeMode>(ThemeMode.system);
+final localeNotifier = ValueNotifier<Locale>(const Locale('en'));
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +19,10 @@ void main() async {
     themeModeNotifier.value = ThemeMode.dark;
   } else if (stored == 'light') {
     themeModeNotifier.value = ThemeMode.light;
+  }
+  final storedLocale = prefs.getString(AppConstants.localeKey);
+  if (storedLocale == 'tr') {
+    localeNotifier.value = const Locale('tr');
   }
   runApp(const MediFinderApp());
 }
@@ -32,16 +38,18 @@ class _MediFinderAppState extends State<MediFinderApp> {
   @override
   void initState() {
     super.initState();
-    themeModeNotifier.addListener(_onThemeChanged);
+    themeModeNotifier.addListener(_rebuild);
+    localeNotifier.addListener(_rebuild);
   }
 
   @override
   void dispose() {
-    themeModeNotifier.removeListener(_onThemeChanged);
+    themeModeNotifier.removeListener(_rebuild);
+    localeNotifier.removeListener(_rebuild);
     super.dispose();
   }
 
-  void _onThemeChanged() => setState(() {});
+  void _rebuild() => setState(() {});
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +61,9 @@ class _MediFinderAppState extends State<MediFinderApp> {
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: themeModeNotifier.value,
+        locale: localeNotifier.value,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         routerConfig: appRouter,
       ),
     );

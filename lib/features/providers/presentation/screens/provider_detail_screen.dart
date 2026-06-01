@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
+import 'package:medifinder/l10n/app_localizations.dart';
 import 'package:medifinder/features/providers/domain/entities/provider_entity.dart';
 import 'package:medifinder/features/providers/presentation/widgets/provider_avatar.dart';
 import 'package:medifinder/features/providers/presentation/widgets/rating_stars.dart';
@@ -14,9 +15,10 @@ class ProviderDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = provider;
     if (p == null) {
+      final l10n = AppLocalizations.of(context)!;
       return Scaffold(
         appBar: AppBar(),
-        body: const Center(child: Text('Provider not found.')),
+        body: Center(child: Text(l10n.providerNotFound)),
       );
     }
 
@@ -133,7 +135,7 @@ class _ContactSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Contact',
+        Text(AppLocalizations.of(context)!.contactSectionTitle,
             style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
         SizedBox(height: ext.spacingXs),
         Card(
@@ -144,7 +146,7 @@ class _ContactSection extends StatelessWidget {
                   leading: Icon(Icons.phone_outlined, color: colors.primary),
                   title: Text(provider.phone!),
                   onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Calling: ${provider.phone}')),
+                    SnackBar(content: Text(AppLocalizations.of(context)!.callingSnackbar(provider.phone!))),
                   ),
                 ),
               if (provider.phone != null && provider.website != null)
@@ -158,7 +160,7 @@ class _ContactSection extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Opening: ${provider.website}')),
+                    SnackBar(content: Text(AppLocalizations.of(context)!.openingSnackbar(provider.website!))),
                   ),
                 ),
             ],
@@ -183,7 +185,7 @@ class _BioSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('About',
+        Text(AppLocalizations.of(context)!.aboutSectionTitle,
             style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
         SizedBox(height: ext.spacingXs),
         Card(

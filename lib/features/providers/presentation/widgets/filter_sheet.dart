@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medifinder/l10n/app_localizations.dart';
 import 'package:medifinder/features/providers/domain/entities/provider_entity.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
 import 'package:medifinder/features/providers/data/mock/mock_providers.dart';
@@ -82,6 +83,8 @@ class _FilterSheetState extends State<FilterSheet> {
   Widget build(BuildContext context) {
     final ext = context.appTheme;
 
+    final l10n = AppLocalizations.of(context)!;
+
     return DraggableScrollableSheet(
       initialChildSize: 0.75,
       minChildSize: 0.5,
@@ -104,14 +107,14 @@ class _FilterSheetState extends State<FilterSheet> {
             padding: EdgeInsets.symmetric(horizontal: ext.spacingMd),
             child: Row(
               children: [
-                Text('Filters', style: Theme.of(context).textTheme.titleLarge),
+                Text(l10n.filterSheetTitle, style: Theme.of(context).textTheme.titleLarge),
                 const Spacer(),
                 TextButton(
                   onPressed: () {
                     context.read<ProviderBloc>().add(const ProviderFilterCleared());
                     Navigator.of(context).pop();
                   },
-                  child: const Text('Clear All'),
+                  child: Text(l10n.clearAllButton),
                 ),
               ],
             ),
@@ -122,7 +125,7 @@ class _FilterSheetState extends State<FilterSheet> {
               padding: EdgeInsets.all(ext.spacingMd),
               children: [
                 FilterChipGroup(
-                  title: 'Country',
+                  title: l10n.filterCountryLabel,
                   options: _countries,
                   selected: _draft.selectedCountries,
                   onToggle: (v) => _toggle(
@@ -144,7 +147,7 @@ class _FilterSheetState extends State<FilterSheet> {
                 ),
                 SizedBox(height: ext.spacingMd),
                 FilterChipGroup(
-                  title: 'City',
+                  title: l10n.filterCityLabel,
                   options: _filteredCities,
                   selected: _draft.selectedCities,
                   onToggle: (v) => _toggle(
@@ -155,7 +158,7 @@ class _FilterSheetState extends State<FilterSheet> {
                 ),
                 SizedBox(height: ext.spacingMd),
                 FilterChipGroup(
-                  title: 'Specialty',
+                  title: l10n.filterSpecialtyLabel,
                   options: _specialties,
                   selected: _draft.selectedSpecialties,
                   onToggle: (v) => _toggle(
@@ -183,7 +186,7 @@ class _FilterSheetState extends State<FilterSheet> {
                     context.read<ProviderBloc>().add(ProviderFilterApplied(_draft));
                     Navigator.of(context).pop();
                   },
-                  child: Text('Show $_resultCount Results'),
+                  child: Text(l10n.showResultsButton(_resultCount)),
                 ),
               ),
             ),

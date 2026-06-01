@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medifinder/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
 import 'package:medifinder/core/utils/constants.dart';
@@ -55,6 +56,14 @@ class _ProviderListScreenState extends State<ProviderListScreen>
     );
   }
 
+  Future<void> _toggleLocale() async {
+    final current = localeNotifier.value.languageCode;
+    final next = current == 'en' ? 'tr' : 'en';
+    localeNotifier.value = Locale(next);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(AppConstants.localeKey, next);
+  }
+
   @override
   Widget build(BuildContext context) {
     final ext = context.appTheme;
@@ -82,6 +91,8 @@ class _ProviderListScreenState extends State<ProviderListScreen>
     AppThemeExtension ext,
     ColorScheme colors,
   ) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SliverToBoxAdapter(
       child: Container(
         decoration: const BoxDecoration(
@@ -105,7 +116,7 @@ class _ProviderListScreenState extends State<ProviderListScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Search for\nSpecialized Care',
+                    l10n.heroTitle,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -114,7 +125,7 @@ class _ProviderListScreenState extends State<ProviderListScreen>
                   ),
                   SizedBox(height: ext.spacingSm),
                   Text(
-                    'Refine results by specialty,\nlocation, and more',
+                    l10n.heroSubtitle,
                     style: Theme.of(
                       context,
                     ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
@@ -122,6 +133,18 @@ class _ProviderListScreenState extends State<ProviderListScreen>
                 ],
               ),
             ),
+            // Language toggle button
+            ValueListenableBuilder<Locale>(
+              valueListenable: localeNotifier,
+              builder: (context, locale, _) {
+                return IconButton(
+                  icon: const Icon(Icons.language_rounded, color: Colors.white),
+                  tooltip: l10n.tooltipLanguage,
+                  onPressed: _toggleLocale,
+                );
+              },
+            ),
+            // Theme toggle button
             ValueListenableBuilder<ThemeMode>(
               valueListenable: themeModeNotifier,
               builder: (context, mode, _) {
@@ -131,7 +154,7 @@ class _ProviderListScreenState extends State<ProviderListScreen>
                     isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
                     color: Colors.white,
                   ),
-                  tooltip: isDark ? 'Light mode' : 'Dark mode',
+                  tooltip: isDark ? l10n.tooltipLightMode : l10n.tooltipDarkMode,
                   onPressed: () async {
                     final newMode = isDark ? ThemeMode.light : ThemeMode.dark;
                     themeModeNotifier.value = newMode;
@@ -151,6 +174,8 @@ class _ProviderListScreenState extends State<ProviderListScreen>
   }
 
   Widget _buildSearchBar(BuildContext context, AppThemeExtension ext) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Padding(
       padding: EdgeInsets.fromLTRB(
         ext.spacingMd,
@@ -161,7 +186,7 @@ class _ProviderListScreenState extends State<ProviderListScreen>
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
-          hintText: 'Search by name or specialty…',
+          hintText: l10n.searchHint,
           prefixIcon: const Icon(Icons.search_rounded),
           suffixIcon: BlocBuilder<ProviderBloc, ProviderState>(
             builder: (context, state) {
@@ -195,6 +220,8 @@ class _ProviderListScreenState extends State<ProviderListScreen>
     AppThemeExtension ext,
     ColorScheme colors,
   ) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocBuilder<ProviderBloc, ProviderState>(
       buildWhen: (prev, curr) {
         if (prev is ProviderLoaded && curr is ProviderLoaded) {
@@ -237,7 +264,6 @@ class _ProviderListScreenState extends State<ProviderListScreen>
             height: 42,
             child: Row(
               children: [
-                // Sabit filtre butonu
                 Padding(
                   padding: EdgeInsets.only(left: ext.spacingMd),
                   child: OutlinedButton.icon(
@@ -249,7 +275,7 @@ class _ProviderListScreenState extends State<ProviderListScreen>
                       smallSize: 7,
                       child: const Icon(Icons.tune_rounded, size: 17),
                     ),
-                    label: const Text('Filters'),
+                    label: Text(l10n.filtersLabel),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 0),
@@ -269,7 +295,6 @@ class _ProviderListScreenState extends State<ProviderListScreen>
                     endIndent: 8,
                     color: colors.outlineVariant,
                   ),
-                  // Kaydırılabilir kategori chip'leri
                   Expanded(
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
@@ -335,6 +360,8 @@ class _ProviderListScreenState extends State<ProviderListScreen>
     AppThemeExtension ext,
     ColorScheme colors,
   ) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SliverToBoxAdapter(
       child: BlocBuilder<ProviderBloc, ProviderState>(
         builder: (context, state) {
@@ -348,7 +375,7 @@ class _ProviderListScreenState extends State<ProviderListScreen>
             child: Row(
               children: [
                 Text(
-                  '${_formatCount(count)} results',
+                  l10n.resultsCount(_formatCount(count)),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: colors.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
@@ -358,7 +385,7 @@ class _ProviderListScreenState extends State<ProviderListScreen>
                 TextButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.sort_rounded, size: 16),
-                  label: const Text('Relevance'),
+                  label: Text(l10n.sortRelevance),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                   ),
