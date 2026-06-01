@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medifinder/core/theme/app_theme_extension.dart';
 
 class RatingStars extends StatelessWidget {
   const RatingStars({
@@ -31,7 +32,7 @@ class RatingStars extends StatelessWidget {
           );
         }),
         if (reviewCount != null) ...[
-          const SizedBox(width: 4),
+          SizedBox(width: Theme.of(context).extension<AppThemeExtension>()!.spacingXs),
           Text(
             '($reviewCount)',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(

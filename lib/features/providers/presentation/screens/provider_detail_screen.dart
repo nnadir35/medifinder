@@ -21,8 +21,6 @@ class ProviderDetailScreen extends StatelessWidget {
     }
 
     final ext = context.appTheme;
-    final colors = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -41,113 +39,160 @@ class ProviderDetailScreen extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.all(ext.spacingMd),
         children: [
-          // Header
-          Center(
-            child: Column(
-              children: [
-                Hero(
-                  tag: p.id,
-                  child: ProviderAvatar(
-                    name: p.name,
-                    imageUrl: p.imageUrl,
-                    radius: 52,
-                  ),
-                ),
-                SizedBox(height: ext.spacingMd),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      p.name,
-                      style: text.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    if (p.isVerified) ...[
-                      SizedBox(width: ext.spacingXs),
-                      Icon(Icons.verified_rounded, color: colors.primary, size: 22),
-                    ],
-                  ],
-                ),
-                SizedBox(height: ext.spacingXs),
-                Text(
-                  p.specialty,
-                  style: text.titleMedium?.copyWith(color: colors.primary),
-                ),
-                SizedBox(height: ext.spacingXs),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.location_on_outlined,
-                        size: 16, color: colors.onSurfaceVariant),
-                    SizedBox(width: ext.spacingXs / 2),
-                    Text(
-                      '${p.city}, ${p.country}',
-                      style: text.bodyMedium
-                          ?.copyWith(color: colors.onSurfaceVariant),
-                    ),
-                  ],
-                ),
-                SizedBox(height: ext.spacingSm),
-                RatingStars(
-                  rating: p.rating,
-                  reviewCount: p.reviewCount,
-                  starSize: 20,
-                ),
-              ],
-            ),
-          ),
-
+          _ProviderHeader(provider: p),
           SizedBox(height: ext.spacingLg),
-
-          // Contact section
-          if (p.phone != null || p.website != null) ...[
-            Text('Contact', style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-            SizedBox(height: ext.spacingXs),
-            Card(
-              child: Column(
-                children: [
-                  if (p.phone != null)
-                    ListTile(
-                      leading: Icon(Icons.phone_outlined, color: colors.primary),
-                      title: Text(p.phone!),
-                      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Calling: ${p.phone}')),
-                      ),
-                    ),
-                  if (p.phone != null && p.website != null)
-                    Divider(height: 1, indent: ext.spacingLg + ext.spacingMd),
-                  if (p.website != null)
-                    ListTile(
-                      leading: Icon(Icons.language_outlined, color: colors.primary),
-                      title: Text(
-                        p.website!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Opening: ${p.website}')),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            SizedBox(height: ext.spacingLg),
-          ],
-
-          // Bio section
-          if (p.bio != null) ...[
-            Text('About', style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-            SizedBox(height: ext.spacingXs),
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(ext.spacingMd),
-                child: Text(p.bio!, style: text.bodyMedium),
-              ),
-            ),
-          ],
+          _ContactSection(provider: p),
+          if (p.bio != null) _BioSection(bio: p.bio!),
         ],
       ),
+    );
+  }
+}
+
+class _ProviderHeader extends StatelessWidget {
+  const _ProviderHeader({required this.provider});
+
+  final ProviderEntity provider;
+
+  @override
+  Widget build(BuildContext context) {
+    final ext = context.appTheme;
+    final colors = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+
+    return Center(
+      child: Column(
+        children: [
+          Hero(
+            tag: provider.id,
+            child: ProviderAvatar(
+              name: provider.name,
+              imageUrl: provider.imageUrl,
+              radius: 52,
+            ),
+          ),
+          SizedBox(height: ext.spacingMd),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                provider.name,
+                style: text.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              if (provider.isVerified) ...[
+                SizedBox(width: ext.spacingXs),
+                Icon(Icons.verified_rounded, color: colors.primary, size: 22),
+              ],
+            ],
+          ),
+          SizedBox(height: ext.spacingXs),
+          Text(
+            provider.specialty,
+            style: text.titleMedium?.copyWith(color: colors.primary),
+          ),
+          SizedBox(height: ext.spacingXs),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.location_on_outlined,
+                  size: 16, color: colors.onSurfaceVariant),
+              SizedBox(width: ext.spacingXs / 2),
+              Text(
+                '${provider.city}, ${provider.country}',
+                style: text.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+              ),
+            ],
+          ),
+          SizedBox(height: ext.spacingSm),
+          RatingStars(
+            rating: provider.rating,
+            reviewCount: provider.reviewCount,
+            starSize: 20,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ContactSection extends StatelessWidget {
+  const _ContactSection({required this.provider});
+
+  final ProviderEntity provider;
+
+  @override
+  Widget build(BuildContext context) {
+    if (provider.phone == null && provider.website == null) {
+      return const SizedBox.shrink();
+    }
+
+    final ext = context.appTheme;
+    final colors = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Contact',
+            style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+        SizedBox(height: ext.spacingXs),
+        Card(
+          child: Column(
+            children: [
+              if (provider.phone != null)
+                ListTile(
+                  leading: Icon(Icons.phone_outlined, color: colors.primary),
+                  title: Text(provider.phone!),
+                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Calling: ${provider.phone}')),
+                  ),
+                ),
+              if (provider.phone != null && provider.website != null)
+                Divider(height: 1, indent: ext.spacingLg + ext.spacingMd),
+              if (provider.website != null)
+                ListTile(
+                  leading: Icon(Icons.language_outlined, color: colors.primary),
+                  title: Text(
+                    provider.website!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Opening: ${provider.website}')),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        SizedBox(height: ext.spacingLg),
+      ],
+    );
+  }
+}
+
+class _BioSection extends StatelessWidget {
+  const _BioSection({required this.bio});
+
+  final String bio;
+
+  @override
+  Widget build(BuildContext context) {
+    final ext = context.appTheme;
+    final text = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('About',
+            style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+        SizedBox(height: ext.spacingXs),
+        Card(
+          child: Padding(
+            padding: EdgeInsets.all(ext.spacingMd),
+            child: Text(bio, style: text.bodyMedium),
+          ),
+        ),
+      ],
     );
   }
 }

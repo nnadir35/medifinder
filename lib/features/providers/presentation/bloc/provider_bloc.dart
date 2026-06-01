@@ -7,7 +7,7 @@ import 'package:medifinder/features/providers/presentation/bloc/provider_event.d
 import 'package:medifinder/features/providers/presentation/bloc/provider_state.dart';
 
 class ProviderBloc extends Bloc<ProviderEvent, ProviderState> {
-  ProviderBloc() : super(const ProviderInitial()) {
+  ProviderBloc() : super(const ProviderLoading()) {
     on<ProviderLoadRequested>(_onLoadRequested);
     on<ProviderSearchChanged>(_onSearchChanged);
     on<ProviderFilterApplied>(_onFilterApplied);
@@ -78,17 +78,11 @@ class ProviderBloc extends Bloc<ProviderEvent, ProviderState> {
     final current = state;
     if (current is! ProviderLoaded) return;
 
-    final filtered = _applyFilters(
-      current.providers,
-      current.searchQuery,
-      FilterState.empty,
-    );
-
     emit(ProviderLoaded(
       providers: current.providers,
-      filteredProviders: filtered,
+      filteredProviders: current.providers,
       activeFilter: FilterState.empty,
-      searchQuery: current.searchQuery,
+      searchQuery: '',
     ));
   }
 

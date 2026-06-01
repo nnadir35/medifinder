@@ -31,6 +31,8 @@ final class ProviderLoaded extends ProviderState {
   final FilterState activeFilter;
   final String searchQuery;
 
+  bool get hasActiveFilters => !activeFilter.isEmpty;
+
   @override
   List<Object?> get props => [
         providers,

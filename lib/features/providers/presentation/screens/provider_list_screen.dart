@@ -4,16 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
 import 'package:medifinder/core/utils/constants.dart';
 import 'package:medifinder/core/utils/extensions.dart';
-import 'package:medifinder/features/providers/data/mock/mock_providers.dart';
 import 'package:medifinder/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:medifinder/features/providers/domain/entities/filter_state.dart';
 import 'package:medifinder/features/providers/presentation/bloc/provider_bloc.dart';
 import 'package:medifinder/features/providers/presentation/bloc/provider_event.dart';
 import 'package:medifinder/features/providers/presentation/bloc/provider_state.dart';
 import 'package:medifinder/features/providers/presentation/widgets/empty_state.dart';
 import 'package:medifinder/features/providers/presentation/widgets/error_state.dart';
-import 'package:medifinder/features/providers/presentation/widgets/filter_chip_group.dart';
+import 'package:medifinder/features/providers/presentation/widgets/filter_sheet.dart';
 import 'package:medifinder/features/providers/presentation/widgets/loading_shimmer.dart';
 import 'package:medifinder/features/providers/presentation/widgets/provider_card.dart';
 
@@ -42,7 +40,7 @@ class _ProviderListScreenState extends State<ProviderListScreen> {
       ),
       builder: (_) => BlocProvider.value(
         value: context.read<ProviderBloc>(),
-        child: _FilterSheet(loadedState: state),
+        child: FilterSheet(loadedState: state),
       ),
     );
   }
@@ -80,7 +78,7 @@ class _ProviderListScreenState extends State<ProviderListScreen> {
               return IconButton(
                 icon: Badge(
                   isLabelVisible: loaded != null &&
-                      !loaded.activeFilter.isEmpty,
+                      loaded.hasActiveFilters,
                   child: const Icon(Icons.tune_rounded),
                 ),
                 tooltip: 'Filter',
@@ -92,7 +90,10 @@ class _ProviderListScreenState extends State<ProviderListScreen> {
           ),
         ],
       ),
-      body: Column(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
         children: [
           Padding(
             padding: EdgeInsets.fromLTRB(
@@ -179,12 +180,7 @@ class _ProviderListScreenState extends State<ProviderListScreen> {
                       ? EmptyState(
                           onClearFilters: () {
                             _searchController.clear();
-                            context
-                                .read<ProviderBloc>()
-                                .add(const ProviderFilterCleared());
-                            context
-                                .read<ProviderBloc>()
-                                .add(const ProviderSearchChanged(''));
+                            context.read<ProviderBloc>().add(const ProviderFilterCleared());
                           },
                         )
                       : ListView.builder(
@@ -192,7 +188,7 @@ class _ProviderListScreenState extends State<ProviderListScreen> {
                           itemCount: filteredProviders.length,
                           itemBuilder: (_, i) => ProviderCard(
                             provider: filteredProviders[i],
-                            onTap: () => context.go(
+                            onTap: () => context.push(
                               '/provider/${filteredProviders[i].id}',
                               extra: filteredProviders[i],
                             ),
@@ -208,185 +204,10 @@ class _ProviderListScreenState extends State<ProviderListScreen> {
             ),
           ),
         ],
+        ),
       ),
     );
   }
 }
 
-class _FilterSheet extends StatefulWidget {
-  const _FilterSheet({required this.loadedState});
 
-  final ProviderLoaded loadedState;
-
-  @override
-  State<_FilterSheet> createState() => _FilterSheetState();
-}
-
-class _FilterSheetState extends State<_FilterSheet> {
-  late FilterState _draft;
-
-  static final _countries =
-      mockProviders.map((p) => p.country).toSet().toList()..sort();
-  static final _specialties =
-      mockProviders.map((p) => p.specialty).toSet().toList()..sort();
-
-  List<String> get _filteredCities {
-    if (_draft.selectedCountries.isEmpty) {
-      return mockProviders.map((p) => p.city).toSet().toList()..sort();
-    }
-    return mockProviders
-        .where((p) => _draft.selectedCountries.contains(p.country))
-        .map((p) => p.city)
-        .toSet()
-        .toList()
-      ..sort();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _draft = widget.loadedState.activeFilter;
-  }
-
-  int get _resultCount {
-    final all = widget.loadedState.providers;
-    return all.where((p) {
-      final matchesSearch = widget.loadedState.searchQuery.isEmpty ||
-          p.name.toLowerCase().contains(widget.loadedState.searchQuery.toLowerCase()) ||
-          p.specialty.toLowerCase().contains(widget.loadedState.searchQuery.toLowerCase());
-      final matchesCountry = _draft.selectedCountries.isEmpty ||
-          _draft.selectedCountries.contains(p.country);
-      final matchesCity = _draft.selectedCities.isEmpty ||
-          _draft.selectedCities.contains(p.city);
-      final matchesSpecialty = _draft.selectedSpecialties.isEmpty ||
-          _draft.selectedSpecialties.contains(p.specialty);
-      return matchesSearch && matchesCountry && matchesCity && matchesSpecialty;
-    }).length;
-  }
-
-  void _toggle(String value, List<String> current, void Function(List<String>) update) {
-    setState(() {
-      update(current.contains(value)
-          ? current.where((e) => e != value).toList()
-          : [...current, value]);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final ext = context.appTheme;
-
-    return DraggableScrollableSheet(
-      initialChildSize: 0.75,
-      minChildSize: 0.5,
-      maxChildSize: 0.95,
-      expand: false,
-      builder: (context, scrollController) => Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: ext.spacingSm),
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: ext.spacingMd),
-            child: Row(
-              children: [
-                Text('Filters',
-                    style: Theme.of(context).textTheme.titleLarge),
-                const Spacer(),
-                TextButton(
-                  onPressed: () {
-                    context.read<ProviderBloc>().add(const ProviderFilterCleared());
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Clear All'),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: ListView(
-              controller: scrollController,
-              padding: EdgeInsets.all(ext.spacingMd),
-              children: [
-                FilterChipGroup(
-                  title: 'Country',
-                  options: _countries,
-                  selected: _draft.selectedCountries,
-                  onToggle: (v) => _toggle(
-                    v,
-                    _draft.selectedCountries,
-                    (list) {
-                      final validCities = mockProviders
-                          .where((p) => list.contains(p.country))
-                          .map((p) => p.city)
-                          .toSet();
-                      _draft = _draft.copyWith(
-                        selectedCountries: list,
-                        selectedCities: _draft.selectedCities
-                            .where((c) => validCities.contains(c))
-                            .toList(),
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(height: ext.spacingMd),
-                FilterChipGroup(
-                  title: 'City',
-                  options: _filteredCities,
-                  selected: _draft.selectedCities,
-                  onToggle: (v) => _toggle(
-                    v,
-                    _draft.selectedCities,
-                    (list) => _draft = _draft.copyWith(selectedCities: list),
-                  ),
-                ),
-                SizedBox(height: ext.spacingMd),
-                FilterChipGroup(
-                  title: 'Specialty',
-                  options: _specialties,
-                  selected: _draft.selectedSpecialties,
-                  onToggle: (v) => _toggle(
-                    v,
-                    _draft.selectedSpecialties,
-                    (list) => _draft = _draft.copyWith(selectedSpecialties: list),
-                  ),
-                ),
-                SizedBox(height: ext.spacingXl),
-              ],
-            ),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                ext.spacingMd,
-                ext.spacingXs,
-                ext.spacingMd,
-                ext.spacingMd,
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () {
-                    context
-                        .read<ProviderBloc>()
-                        .add(ProviderFilterApplied(_draft));
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Show $_resultCount Results'),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

@@ -14,8 +14,10 @@ class ProviderAvatar extends StatelessWidget {
   final double radius;
 
   String get _initials {
-    final parts = name.trim().split(' ');
-    if (parts.length >= 2) {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return '?';
+    final parts = trimmed.split(RegExp(r'\s+'));
+    if (parts.length >= 2 && parts[1].isNotEmpty) {
       return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
     }
     return parts[0][0].toUpperCase();
