@@ -94,4 +94,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String showResultsButton(int count) {
     return 'Show $count Results';
   }
+
+  @override
+  String get specialtyCardiologist => 'Cardiologist';
+
+  @override
+  String get specialtyDermatologist => 'Dermatologist';
+
+  @override
+  String get specialtyOrthopedist => 'Orthopedist';
+
+  @override
+  String get specialtyNeurologist => 'Neurologist';
+
+  @override
+  String get specialtyDentist => 'Dentist';
+
+  @override
+  String get specialtyOphthalmologist => 'Ophthalmologist';
 }

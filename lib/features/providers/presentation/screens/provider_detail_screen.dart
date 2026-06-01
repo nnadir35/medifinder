@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
+import 'package:medifinder/core/utils/specialty_l10n.dart';
 import 'package:medifinder/l10n/app_localizations.dart';
 import 'package:medifinder/features/providers/domain/entities/provider_entity.dart';
 import 'package:medifinder/features/providers/presentation/widgets/provider_avatar.dart';
@@ -89,7 +90,7 @@ class _ProviderHeader extends StatelessWidget {
           ),
           SizedBox(height: ext.spacingXs),
           Text(
-            provider.specialty,
+            AppLocalizations.of(context)!.localizeSpecialty(provider.specialty),
             style: text.titleMedium?.copyWith(color: colors.primary),
           ),
           SizedBox(height: ext.spacingXs),

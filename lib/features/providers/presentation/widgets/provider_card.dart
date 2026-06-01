@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
+import 'package:medifinder/core/utils/specialty_l10n.dart';
 import 'package:medifinder/features/providers/domain/entities/provider_entity.dart';
 import 'package:medifinder/features/providers/presentation/widgets/provider_avatar.dart';
 import 'package:medifinder/features/providers/presentation/widgets/rating_stars.dart';
+import 'package:medifinder/l10n/app_localizations.dart';
 
 class ProviderCard extends StatelessWidget {
   const ProviderCard({
@@ -67,7 +69,7 @@ class ProviderCard extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                provider.specialty,
+                AppLocalizations.of(context)!.localizeSpecialty(provider.specialty),
                 style: text.bodySmall?.copyWith(
                   color: colors.primary,
                   fontWeight: FontWeight.w500,

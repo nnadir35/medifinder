@@ -95,4 +95,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String showResultsButton(int count) {
     return '$count Sonucu Göster';
   }
+
+  @override
+  String get specialtyCardiologist => 'Kardiyolog';
+
+  @override
+  String get specialtyDermatologist => 'Dermatolog';
+
+  @override
+  String get specialtyOrthopedist => 'Ortopedist';
+
+  @override
+  String get specialtyNeurologist => 'Nörolog';
+
+  @override
+  String get specialtyDentist => 'Diş Hekimi';
+
+  @override
+  String get specialtyOphthalmologist => 'Göz Doktoru';
 }

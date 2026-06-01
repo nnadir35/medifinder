@@ -45,5 +45,11 @@
     "placeholders": {
       "count": { "type": "int" }
     }
-  }
+  },
+  "specialtyCardiologist": "Cardiologist",
+  "specialtyDermatologist": "Dermatologist",
+  "specialtyOrthopedist": "Orthopedist",
+  "specialtyNeurologist": "Neurologist",
+  "specialtyDentist": "Dentist",
+  "specialtyOphthalmologist": "Ophthalmologist"
 }

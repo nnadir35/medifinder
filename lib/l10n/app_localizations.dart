@@ -253,6 +253,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show {count} Results'**
   String showResultsButton(int count);
+
+  /// No description provided for @specialtyCardiologist.
+  ///
+  /// In en, this message translates to:
+  /// **'Cardiologist'**
+  String get specialtyCardiologist;
+
+  /// No description provided for @specialtyDermatologist.
+  ///
+  /// In en, this message translates to:
+  /// **'Dermatologist'**
+  String get specialtyDermatologist;
+
+  /// No description provided for @specialtyOrthopedist.
+  ///
+  /// In en, this message translates to:
+  /// **'Orthopedist'**
+  String get specialtyOrthopedist;
+
+  /// No description provided for @specialtyNeurologist.
+  ///
+  /// In en, this message translates to:
+  /// **'Neurologist'**
+  String get specialtyNeurologist;
+
+  /// No description provided for @specialtyDentist.
+  ///
+  /// In en, this message translates to:
+  /// **'Dentist'**
+  String get specialtyDentist;
+
+  /// No description provided for @specialtyOphthalmologist.
+  ///
+  /// In en, this message translates to:
+  /// **'Ophthalmologist'**
+  String get specialtyOphthalmologist;
 }
 
 class _AppLocalizationsDelegate

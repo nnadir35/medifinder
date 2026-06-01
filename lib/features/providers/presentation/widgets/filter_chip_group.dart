@@ -8,12 +8,14 @@ class FilterChipGroup extends StatelessWidget {
     required this.options,
     required this.selected,
     required this.onToggle,
+    this.labelOf,
   });
 
   final String title;
   final List<String> options;
   final List<String> selected;
   final void Function(String option) onToggle;
+  final String Function(String option)? labelOf;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,7 @@ class FilterChipGroup extends StatelessWidget {
           children: options.map((option) {
             final isSelected = selected.contains(option);
             return FilterChip(
-              label: Text(option),
+              label: Text(labelOf != null ? labelOf!(option) : option),
               selected: isSelected,
               onSelected: (_) => onToggle(option),
             );

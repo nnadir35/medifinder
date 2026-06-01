@@ -25,5 +25,11 @@
   "filterCountryLabel": "Ülke",
   "filterCityLabel": "Şehir",
   "filterSpecialtyLabel": "Uzmanlık",
-  "showResultsButton": "{count} Sonucu Göster"
+  "showResultsButton": "{count} Sonucu Göster",
+  "specialtyCardiologist": "Kardiyolog",
+  "specialtyDermatologist": "Dermatolog",
+  "specialtyOrthopedist": "Ortopedist",
+  "specialtyNeurologist": "Nörolog",
+  "specialtyDentist": "Diş Hekimi",
+  "specialtyOphthalmologist": "Göz Doktoru"
 }
