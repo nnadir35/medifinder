@@ -11,7 +11,6 @@ class LoadingShimmer extends StatefulWidget {
 class _LoadingShimmerState extends State<LoadingShimmer>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  late final Animation<Color?> _colorAnim;
 
   @override
   void initState() {
@@ -20,11 +19,6 @@ class _LoadingShimmerState extends State<LoadingShimmer>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     )..repeat(reverse: true);
-
-    _colorAnim = ColorTween(
-      begin: Colors.grey[300],
-      end: Colors.grey[100],
-    ).animate(_controller);
   }
 
   @override
@@ -36,10 +30,16 @@ class _LoadingShimmerState extends State<LoadingShimmer>
   @override
   Widget build(BuildContext context) {
     final ext = context.appTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final colorAnim = ColorTween(
+      begin: colorScheme.surfaceContainerLow,
+      end: colorScheme.surfaceContainer,
+    ).animate(_controller);
+
     return AnimatedBuilder(
-      animation: _colorAnim,
+      animation: colorAnim,
       builder: (context, _) {
-        final shimmerColor = _colorAnim.value ?? Colors.grey[200]!;
+        final shimmerColor = colorAnim.value ?? colorScheme.surfaceContainer;
         return ListView.builder(
           itemCount: 6,
           padding: EdgeInsets.symmetric(vertical: ext.spacingSm),

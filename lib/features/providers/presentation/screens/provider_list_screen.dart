@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
+import 'package:medifinder/core/utils/constants.dart';
+import 'package:medifinder/core/utils/extensions.dart';
 import 'package:medifinder/features/providers/data/mock/mock_providers.dart';
+import 'package:medifinder/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:medifinder/features/providers/domain/entities/filter_state.dart';
 import 'package:medifinder/features/providers/presentation/bloc/provider_bloc.dart';
 import 'package:medifinder/features/providers/presentation/bloc/provider_event.dart';
@@ -52,6 +56,24 @@ class _ProviderListScreenState extends State<ProviderListScreen> {
         title: const Text('MediFinder'),
         centerTitle: false,
         actions: [
+          IconButton(
+            icon: Icon(
+              context.isDarkMode
+                  ? Icons.light_mode_outlined
+                  : Icons.dark_mode_outlined,
+            ),
+            tooltip: 'Toggle theme',
+            onPressed: () async {
+              final newMode =
+                  context.isDarkMode ? ThemeMode.light : ThemeMode.dark;
+              themeModeNotifier.value = newMode;
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setString(
+                AppConstants.themeModeKey,
+                newMode == ThemeMode.dark ? 'dark' : 'light',
+              );
+            },
+          ),
           BlocBuilder<ProviderBloc, ProviderState>(
             builder: (context, state) {
               final loaded = state is ProviderLoaded ? state : null;
@@ -91,8 +113,10 @@ class _ProviderListScreenState extends State<ProviderListScreen> {
           ),
           BlocBuilder<ProviderBloc, ProviderState>(
             buildWhen: (prev, curr) {
-              if (curr is! ProviderLoaded) return false;
-              return !curr.activeFilter.isEmpty;
+              if (prev is ProviderLoaded && curr is ProviderLoaded) {
+                return prev.activeFilter != curr.activeFilter;
+              }
+              return true;
             },
             builder: (context, state) {
               if (state is! ProviderLoaded) return const SizedBox.shrink();
@@ -203,10 +227,20 @@ class _FilterSheetState extends State<_FilterSheet> {
 
   static final _countries =
       mockProviders.map((p) => p.country).toSet().toList()..sort();
-  static final _cities =
-      mockProviders.map((p) => p.city).toSet().toList()..sort();
   static final _specialties =
       mockProviders.map((p) => p.specialty).toSet().toList()..sort();
+
+  List<String> get _filteredCities {
+    if (_draft.selectedCountries.isEmpty) {
+      return mockProviders.map((p) => p.city).toSet().toList()..sort();
+    }
+    return mockProviders
+        .where((p) => _draft.selectedCountries.contains(p.country))
+        .map((p) => p.city)
+        .toSet()
+        .toList()
+      ..sort();
+  }
 
   @override
   void initState() {
@@ -289,13 +323,24 @@ class _FilterSheetState extends State<_FilterSheet> {
                   onToggle: (v) => _toggle(
                     v,
                     _draft.selectedCountries,
-                    (list) => _draft = _draft.copyWith(selectedCountries: list),
+                    (list) {
+                      final validCities = mockProviders
+                          .where((p) => list.contains(p.country))
+                          .map((p) => p.city)
+                          .toSet();
+                      _draft = _draft.copyWith(
+                        selectedCountries: list,
+                        selectedCities: _draft.selectedCities
+                            .where((c) => validCities.contains(c))
+                            .toList(),
+                      );
+                    },
                   ),
                 ),
                 SizedBox(height: ext.spacingMd),
                 FilterChipGroup(
                   title: 'City',
-                  options: _cities,
+                  options: _filteredCities,
                   selected: _draft.selectedCities,
                   onToggle: (v) => _toggle(
                     v,
