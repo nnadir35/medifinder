@@ -3,11 +3,7 @@ import 'package:medifinder/core/theme/app_theme_extension.dart';
 import 'package:medifinder/l10n/app_localizations.dart';
 
 class ErrorState extends StatelessWidget {
-  const ErrorState({
-    super.key,
-    required this.message,
-    required this.onRetry,
-  });
+  const ErrorState({super.key, required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;
@@ -37,11 +33,14 @@ class ErrorState extends StatelessWidget {
               style: text.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: ext.spacingLg),
-            OutlinedButton(
-              onPressed: onRetry,
-              child: Text(l10n.retryButton),
+            SizedBox(height: ext.spacingSm),
+            Text(
+              l10n.errorNetworkHint,
+              style: text.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+              textAlign: TextAlign.center,
             ),
+            SizedBox(height: ext.spacingLg),
+            OutlinedButton(onPressed: onRetry, child: Text(l10n.retryButton)),
           ],
         ),
       ),

@@ -1,13 +1,19 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medifinder/core/error/exceptions.dart';
 import 'package:medifinder/core/error/failures.dart';
-import 'package:medifinder/features/providers/data/mock/mock_providers.dart';
+import 'package:medifinder/features/providers/data/repositories/provider_repository_impl.dart';
 import 'package:medifinder/features/providers/domain/entities/filter_state.dart';
 import 'package:medifinder/features/providers/domain/entities/provider_entity.dart';
+import 'package:medifinder/features/providers/domain/repositories/provider_repository.dart';
 import 'package:medifinder/features/providers/presentation/bloc/provider_event.dart';
 import 'package:medifinder/features/providers/presentation/bloc/provider_state.dart';
 
 class ProviderBloc extends Bloc<ProviderEvent, ProviderState> {
-  ProviderBloc() : super(const ProviderLoading()) {
+  final ProviderRepository _repository;
+
+  ProviderBloc({ProviderRepository? repository})
+      : _repository = repository ?? const ProviderRepositoryImpl(),
+        super(const ProviderLoading()) {
     on<ProviderLoadRequested>(_onLoadRequested);
     on<ProviderSearchChanged>(_onSearchChanged);
     on<ProviderFilterApplied>(_onFilterApplied);
@@ -20,13 +26,19 @@ class ProviderBloc extends Bloc<ProviderEvent, ProviderState> {
     Emitter<ProviderState> emit,
   ) async {
     emit(const ProviderLoading());
-    await Future.delayed(const Duration(milliseconds: 800));
-    emit(ProviderLoaded(
-      providers: mockProviders,
-      filteredProviders: mockProviders,
-      activeFilter: FilterState.empty,
-      searchQuery: '',
-    ));
+    try {
+      final providers = await _repository.getProviders();
+      emit(ProviderLoaded(
+        providers: providers,
+        filteredProviders: providers,
+        activeFilter: FilterState.empty,
+        searchQuery: '',
+      ));
+    } on NetworkException catch (e) {
+      emit(ProviderError(message: e.message, failure: NetworkFailure(e.message)));
+    } catch (e) {
+      emit(ProviderError(message: 'Something went wrong', failure: const UnknownFailure()));
+    }
   }
 
   void _onSearchChanged(
@@ -90,20 +102,19 @@ class ProviderBloc extends Bloc<ProviderEvent, ProviderState> {
     ProviderRetryRequested event,
     Emitter<ProviderState> emit,
   ) async {
+    emit(const ProviderLoading());
     try {
-      emit(const ProviderLoading());
-      await Future.delayed(const Duration(milliseconds: 800));
+      final providers = await _repository.getProviders();
       emit(ProviderLoaded(
-        providers: mockProviders,
-        filteredProviders: mockProviders,
+        providers: providers,
+        filteredProviders: providers,
         activeFilter: FilterState.empty,
         searchQuery: '',
       ));
+    } on NetworkException catch (e) {
+      emit(ProviderError(message: e.message, failure: NetworkFailure(e.message)));
     } catch (e) {
-      emit(ProviderError(
-        message: e.toString(),
-        failure: const NetworkFailure(),
-      ));
+      emit(ProviderError(message: 'Something went wrong', failure: const UnknownFailure()));
     }
   }
 

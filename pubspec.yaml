@@ -42,6 +42,7 @@ dependencies:
   go_router: ^14.0.0
   shared_preferences: ^2.3.0
   cached_network_image: ^3.4.0
+  connectivity_plus: ^6.0.0
 
 dev_dependencies:
   flutter_test:
