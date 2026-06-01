@@ -1,25 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
 import 'package:medifinder/features/providers/domain/entities/provider_entity.dart';
 import 'package:medifinder/features/providers/presentation/widgets/provider_avatar.dart';
 import 'package:medifinder/features/providers/presentation/widgets/rating_stars.dart';
 
-class ProviderDetailScreen extends StatefulWidget {
+class ProviderDetailScreen extends StatelessWidget {
   const ProviderDetailScreen({super.key, required this.provider});
 
   final ProviderEntity? provider;
 
   @override
-  State<ProviderDetailScreen> createState() => _ProviderDetailScreenState();
-}
-
-class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
-  bool _isFollowing = false;
-
-  @override
   Widget build(BuildContext context) {
-    final provider = widget.provider;
-    if (provider == null) {
+    final p = provider;
+    if (p == null) {
       return Scaffold(
         appBar: AppBar(),
         body: const Center(child: Text('Provider not found.')),
@@ -32,22 +26,17 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(provider.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: ext.spacingSm),
-            child: FilledButton(
-              onPressed: () => setState(() => _isFollowing = !_isFollowing),
-              style: _isFollowing
-                  ? FilledButton.styleFrom(
-                      backgroundColor: colors.secondaryContainer,
-                      foregroundColor: colors.onSecondaryContainer,
-                    )
-                  : null,
-              child: Text(_isFollowing ? 'Following' : 'Follow'),
-            ),
-          ),
-        ],
+        title: Text(p.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        leading: BackButton(
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
+        ),
+        actions: const [],
       ),
       body: ListView(
         padding: EdgeInsets.all(ext.spacingMd),
@@ -57,10 +46,10 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
             child: Column(
               children: [
                 Hero(
-                  tag: provider.id,
+                  tag: p.id,
                   child: ProviderAvatar(
-                    name: provider.name,
-                    imageUrl: provider.imageUrl,
+                    name: p.name,
+                    imageUrl: p.imageUrl,
                     radius: 52,
                   ),
                 ),
@@ -69,12 +58,12 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      provider.name,
+                      p.name,
                       style: text.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    if (provider.isVerified) ...[
+                    if (p.isVerified) ...[
                       SizedBox(width: ext.spacingXs),
                       Icon(Icons.verified_rounded, color: colors.primary, size: 22),
                     ],
@@ -82,7 +71,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                 ),
                 SizedBox(height: ext.spacingXs),
                 Text(
-                  provider.specialty,
+                  p.specialty,
                   style: text.titleMedium?.copyWith(color: colors.primary),
                 ),
                 SizedBox(height: ext.spacingXs),
@@ -93,7 +82,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                         size: 16, color: colors.onSurfaceVariant),
                     SizedBox(width: ext.spacingXs / 2),
                     Text(
-                      '${provider.city}, ${provider.country}',
+                      '${p.city}, ${p.country}',
                       style: text.bodyMedium
                           ?.copyWith(color: colors.onSurfaceVariant),
                     ),
@@ -101,8 +90,8 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                 ),
                 SizedBox(height: ext.spacingSm),
                 RatingStars(
-                  rating: provider.rating,
-                  reviewCount: provider.reviewCount,
+                  rating: p.rating,
+                  reviewCount: p.reviewCount,
                   starSize: 20,
                 ),
               ],
@@ -112,32 +101,32 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
           SizedBox(height: ext.spacingLg),
 
           // Contact section
-          if (provider.phone != null || provider.website != null) ...[
+          if (p.phone != null || p.website != null) ...[
             Text('Contact', style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
             SizedBox(height: ext.spacingXs),
             Card(
               child: Column(
                 children: [
-                  if (provider.phone != null)
+                  if (p.phone != null)
                     ListTile(
                       leading: Icon(Icons.phone_outlined, color: colors.primary),
-                      title: Text(provider.phone!),
+                      title: Text(p.phone!),
                       onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Calling: ${provider.phone}')),
+                        SnackBar(content: Text('Calling: ${p.phone}')),
                       ),
                     ),
-                  if (provider.phone != null && provider.website != null)
+                  if (p.phone != null && p.website != null)
                     Divider(height: 1, indent: ext.spacingLg + ext.spacingMd),
-                  if (provider.website != null)
+                  if (p.website != null)
                     ListTile(
                       leading: Icon(Icons.language_outlined, color: colors.primary),
                       title: Text(
-                        provider.website!,
+                        p.website!,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Opening: ${provider.website}')),
+                        SnackBar(content: Text('Opening: ${p.website}')),
                       ),
                     ),
                 ],
@@ -147,13 +136,13 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
           ],
 
           // Bio section
-          if (provider.bio != null) ...[
+          if (p.bio != null) ...[
             Text('About', style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
             SizedBox(height: ext.spacingXs),
             Card(
               child: Padding(
                 padding: EdgeInsets.all(ext.spacingMd),
-                child: Text(provider.bio!, style: text.bodyMedium),
+                child: Text(p.bio!, style: text.bodyMedium),
               ),
             ),
           ],
