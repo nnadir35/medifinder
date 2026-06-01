@@ -152,12 +152,6 @@ abstract class AppLocalizations {
   /// **'{count} results'**
   String resultsCount(String count);
 
-  /// No description provided for @sortRelevance.
-  ///
-  /// In en, this message translates to:
-  /// **'Relevance'**
-  String get sortRelevance;
-
   /// No description provided for @providerNotFound.
   ///
   /// In en, this message translates to:

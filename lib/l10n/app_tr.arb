@@ -9,7 +9,6 @@
   "searchHint": "İsim veya uzmanlık ara…",
   "filtersLabel": "Filtreler",
   "resultsCount": "{count} sonuç",
-  "sortRelevance": "Alaka düzeyi",
   "providerNotFound": "Sağlayıcı bulunamadı.",
   "contactSectionTitle": "İletişim",
   "callingSnackbar": "Aranıyor: {phone}",

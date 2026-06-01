@@ -38,9 +38,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get sortRelevance => 'Relevance';
-
-  @override
   String get providerNotFound => 'Provider not found.';
 
   @override

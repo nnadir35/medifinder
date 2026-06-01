@@ -381,15 +381,6 @@ class _ProviderListScreenState extends State<ProviderListScreen>
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const Spacer(),
-                TextButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.sort_rounded, size: 16),
-                  label: Text(l10n.sortRelevance),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                  ),
-                ),
               ],
             ),
           );

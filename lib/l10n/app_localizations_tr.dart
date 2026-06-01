@@ -38,9 +38,6 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get sortRelevance => 'Alaka düzeyi';
-
-  @override
   String get providerNotFound => 'Sağlayıcı bulunamadı.';
 
   @override
