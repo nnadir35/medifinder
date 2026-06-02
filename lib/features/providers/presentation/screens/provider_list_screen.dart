@@ -24,21 +24,12 @@ class ProviderListScreen extends StatefulWidget {
   State<ProviderListScreen> createState() => _ProviderListScreenState();
 }
 
-class _ProviderListScreenState extends State<ProviderListScreen>
-    with SingleTickerProviderStateMixin {
+class _ProviderListScreenState extends State<ProviderListScreen> {
   final _searchController = TextEditingController();
-  late final TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _tabController.dispose();
     super.dispose();
   }
 
@@ -428,22 +419,30 @@ class _ProviderListScreenState extends State<ProviderListScreen>
                     },
                   ),
                 )
-                : SliverGrid.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12.r,
-                    mainAxisSpacing: 12.r,
-                  ),
-                  itemCount: filteredProviders.length,
-                  itemBuilder:
-                      (_, i) => ProviderCard(
-                        provider: filteredProviders[i],
-                        onTap:
-                            () => context.push(
-                              '/provider/${filteredProviders[i].id}',
-                              extra: filteredProviders[i],
-                            ),
+                : SliverLayoutBuilder(
+                  builder: (context, constraints) {
+                    final crossAxisCount =
+                        constraints.crossAxisExtent > 600 ? 3 : 2;
+                    final spacing = 12.r;
+                    return SliverGrid.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        crossAxisSpacing: spacing,
+                        mainAxisSpacing: spacing,
+                        childAspectRatio: 0.72,
                       ),
+                      itemCount: filteredProviders.length,
+                      itemBuilder:
+                          (_, i) => ProviderCard(
+                            provider: filteredProviders[i],
+                            onTap:
+                                () => context.push(
+                                  '/provider/${filteredProviders[i].id}',
+                                  extra: filteredProviders[i],
+                                ),
+                          ),
+                    );
+                  },
                 ),
           ProviderError(:final message) => SliverToBoxAdapter(
             child: ErrorState(

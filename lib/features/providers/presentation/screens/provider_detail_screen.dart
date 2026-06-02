@@ -95,7 +95,7 @@ class _ProviderHeader extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.location_on_outlined,
-                  size: 16, color: colors.onSurfaceVariant),
+                  size: 16.r, color: colors.onSurfaceVariant),
               SizedBox(width: ext.spacingXs / 2),
               Text(
                 '${provider.city}, ${provider.country}',
