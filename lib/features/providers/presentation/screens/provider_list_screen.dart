@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medifinder/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
@@ -151,10 +152,13 @@ class _ProviderListScreenState extends State<ProviderListScreen>
                 final isDark = mode == ThemeMode.dark;
                 return IconButton(
                   icon: Icon(
-                    isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                    isDark
+                        ? Icons.light_mode_outlined
+                        : Icons.dark_mode_outlined,
                     color: Colors.white,
                   ),
-                  tooltip: isDark ? l10n.tooltipLightMode : l10n.tooltipDarkMode,
+                  tooltip:
+                      isDark ? l10n.tooltipLightMode : l10n.tooltipDarkMode,
                   onPressed: () async {
                     final newMode = isDark ? ThemeMode.light : ThemeMode.dark;
                     themeModeNotifier.value = newMode;
@@ -237,23 +241,26 @@ class _ProviderListScreenState extends State<ProviderListScreen>
         if (filter != null) {
           if (filter.selectedCountries.isNotEmpty) {
             final all = filter.selectedCountries;
-            final label = all.length == 1
-                ? all.first
-                : '${all.take(2).join(', ')}${all.length > 2 ? ' +${all.length - 2}' : ''}';
+            final label =
+                all.length == 1
+                    ? all.first
+                    : '${all.take(2).join(', ')}${all.length > 2 ? ' +${all.length - 2}' : ''}';
             categoryChips.add((label: label, type: 'country'));
           }
           if (filter.selectedCities.isNotEmpty) {
             final all = filter.selectedCities;
-            final label = all.length == 1
-                ? all.first
-                : '${all.take(2).join(', ')}${all.length > 2 ? ' +${all.length - 2}' : ''}';
+            final label =
+                all.length == 1
+                    ? all.first
+                    : '${all.take(2).join(', ')}${all.length > 2 ? ' +${all.length - 2}' : ''}';
             categoryChips.add((label: label, type: 'city'));
           }
           if (filter.selectedSpecialties.isNotEmpty) {
             final all = filter.selectedSpecialties;
-            final label = all.length == 1
-                ? all.first
-                : '${all.take(2).join(', ')}${all.length > 2 ? ' +${all.length - 2}' : ''}';
+            final label =
+                all.length == 1
+                    ? all.first
+                    : '${all.take(2).join(', ')}${all.length > 2 ? ' +${all.length - 2}' : ''}';
             categoryChips.add((label: label, type: 'specialty'));
           }
         }
@@ -261,24 +268,27 @@ class _ProviderListScreenState extends State<ProviderListScreen>
         return Padding(
           padding: EdgeInsets.symmetric(vertical: ext.spacingXs),
           child: SizedBox(
-            height: 42,
+            height: 42.r,
             child: Row(
               children: [
                 Padding(
                   padding: EdgeInsets.only(left: ext.spacingMd),
                   child: OutlinedButton.icon(
-                    onPressed: loaded != null
-                        ? () => _openFilterSheet(context, loaded)
-                        : null,
+                    onPressed:
+                        loaded != null
+                            ? () => _openFilterSheet(context, loaded)
+                            : null,
                     icon: Badge(
                       isLabelVisible: loaded?.hasActiveFilters ?? false,
-                      smallSize: 7,
-                      child: const Icon(Icons.tune_rounded, size: 17),
+                      smallSize: 7.r,
+                      child: Icon(Icons.tune_rounded, size: 17.r),
                     ),
                     label: Text(l10n.filtersLabel),
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 0),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.r,
+                        vertical: 0,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(ext.radiusMd),
                       ),
@@ -289,10 +299,10 @@ class _ProviderListScreenState extends State<ProviderListScreen>
                 if (categoryChips.isNotEmpty) ...[
                   SizedBox(width: ext.spacingXs),
                   VerticalDivider(
-                    width: 1,
+                    width: 1.r,
                     thickness: 1,
-                    indent: 8,
-                    endIndent: 8,
+                    indent: 8.r,
+                    endIndent: 8.r,
                     color: colors.outlineVariant,
                   ),
                   Expanded(
@@ -300,40 +310,40 @@ class _ProviderListScreenState extends State<ProviderListScreen>
                       scrollDirection: Axis.horizontal,
                       padding: EdgeInsets.symmetric(horizontal: ext.spacingXs),
                       itemCount: categoryChips.length,
-                      separatorBuilder: (_, __) =>
-                          SizedBox(width: ext.spacingXs),
+                      separatorBuilder:
+                          (_, __) => SizedBox(width: ext.spacingXs),
                       itemBuilder: (context, i) {
                         final chip = categoryChips[i];
                         return InputChip(
-                          avatar: Icon(
-                            switch (chip.type) {
-                              'country' => Icons.public_rounded,
-                              'city' => Icons.location_city_rounded,
-                              _ => Icons.medical_services_outlined,
-                            },
-                            size: 15,
-                          ),
+                          avatar: Icon(switch (chip.type) {
+                            'country' => Icons.public_rounded,
+                            'city' => Icons.location_city_rounded,
+                            _ => Icons.medical_services_outlined,
+                          }, size: 15.r),
                           label: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(chip.label),
-                              const SizedBox(width: 2),
-                              Icon(Icons.arrow_drop_down_rounded,
-                                  size: 16,
-                                  color: colors.onSurfaceVariant),
+                              SizedBox(width: 2.r),
+                              Icon(
+                                Icons.arrow_drop_down_rounded,
+                                size: 16.r,
+                                color: colors.onSurfaceVariant,
+                              ),
                             ],
                           ),
-                          onPressed: loaded != null
-                              ? () => _openFilterSheet(context, loaded)
-                              : null,
+                          onPressed:
+                              loaded != null
+                                  ? () => _openFilterSheet(context, loaded)
+                                  : null,
                           onDeleted: () {
                             final bloc = context.read<ProviderBloc>();
                             final updated = switch (chip.type) {
-                              'country' =>
-                                filter!.copyWith(selectedCountries: []),
+                              'country' => filter!.copyWith(
+                                selectedCountries: [],
+                              ),
                               'city' => filter!.copyWith(selectedCities: []),
-                              _ =>
-                                filter!.copyWith(selectedSpecialties: []),
+                              _ => filter!.copyWith(selectedSpecialties: []),
                             };
                             updated.isEmpty
                                 ? bloc.add(const ProviderFilterCleared())
@@ -418,32 +428,22 @@ class _ProviderListScreenState extends State<ProviderListScreen>
                     },
                   ),
                 )
-                : SliverPadding(
-                  padding: EdgeInsets.fromLTRB(
-                    ext.spacingMd,
-                    ext.spacingXs,
-                    ext.spacingMd,
-                    ext.spacingMd,
+                : SliverGrid.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12.r,
+                    mainAxisSpacing: 12.r,
                   ),
-                  sliver: SliverGrid.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 0.85,
-                        ),
-                    itemCount: filteredProviders.length,
-                    itemBuilder:
-                        (_, i) => ProviderCard(
-                          provider: filteredProviders[i],
-                          onTap:
-                              () => context.push(
-                                '/provider/${filteredProviders[i].id}',
-                                extra: filteredProviders[i],
-                              ),
-                        ),
-                  ),
+                  itemCount: filteredProviders.length,
+                  itemBuilder:
+                      (_, i) => ProviderCard(
+                        provider: filteredProviders[i],
+                        onTap:
+                            () => context.push(
+                              '/provider/${filteredProviders[i].id}',
+                              extra: filteredProviders[i],
+                            ),
+                      ),
                 ),
           ProviderError(:final message) => SliverToBoxAdapter(
             child: ErrorState(

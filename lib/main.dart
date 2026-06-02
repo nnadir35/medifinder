@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medifinder/core/router/app_router.dart';
 import 'package:medifinder/core/theme/app_theme.dart';
 import 'package:medifinder/core/utils/constants.dart';
@@ -53,18 +54,23 @@ class _MediFinderAppState extends State<MediFinderApp> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ProviderBloc>(
-      create: (_) => ProviderBloc()..add(const ProviderLoadRequested()),
-      child: MaterialApp.router(
-        title: 'MediFinder',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        themeMode: themeModeNotifier.value,
-        locale: localeNotifier.value,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        routerConfig: appRouter,
+    return ScreenUtilInit(
+      designSize: const Size(390, 844),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) => BlocProvider<ProviderBloc>(
+        create: (_) => ProviderBloc()..add(const ProviderLoadRequested()),
+        child: MaterialApp.router(
+          title: 'MediFinder',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: themeModeNotifier.value,
+          locale: localeNotifier.value,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: appRouter,
+        ),
       ),
     );
   }

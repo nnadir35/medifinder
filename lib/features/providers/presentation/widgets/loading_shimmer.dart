@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
 
 class LoadingShimmer extends StatefulWidget {
@@ -72,8 +73,8 @@ class _ShimmerCard extends StatelessWidget {
           children: [
             AnimatedContainer(
               duration: Duration.zero,
-              width: 60,
-              height: 60,
+              width: 60.r,
+              height: 60.r,
               decoration: BoxDecoration(
                 color: color,
                 shape: BoxShape.circle,
@@ -84,13 +85,13 @@ class _ShimmerCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _block(color, double.infinity, 14),
+                  _block(color, double.infinity, 14.r),
                   SizedBox(height: ext.spacingXs),
-                  _block(color, 120, 12),
+                  _block(color, 120.r, 12.r),
                   SizedBox(height: ext.spacingXs),
-                  _block(color, 180, 12),
+                  _block(color, 180.r, 12.r),
                   SizedBox(height: ext.spacingXs),
-                  _block(color, 100, 12),
+                  _block(color, 100.r, 12.r),
                 ],
               ),
             ),
@@ -106,7 +107,7 @@ class _ShimmerCard extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(4.r),
         ),
       );
 }

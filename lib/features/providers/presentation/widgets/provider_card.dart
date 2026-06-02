@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
 import 'package:medifinder/core/utils/specialty_l10n.dart';
 import 'package:medifinder/features/providers/domain/entities/provider_entity.dart';
@@ -38,7 +39,7 @@ class ProviderCard extends StatelessWidget {
                   child: ProviderAvatar(
                     name: provider.name,
                     imageUrl: provider.imageUrl,
-                    radius: 32,
+                    radius: 32.r,
                   ),
                 ),
               ),
@@ -56,18 +57,9 @@ class ProviderCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  if (provider.isVerified)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4, top: 1),
-                      child: Icon(
-                        Icons.verified_rounded,
-                        size: 14,
-                        color: colors.primary,
-                      ),
-                    ),
                 ],
               ),
-              const SizedBox(height: 2),
+              SizedBox(height: 2.r),
               Text(
                 AppLocalizations.of(context)!.localizeSpecialty(provider.specialty),
                 style: text.bodySmall?.copyWith(
@@ -77,27 +69,27 @@ class ProviderCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 6),
+              SizedBox(height: 6.r),
               RatingStars(
                 rating: provider.rating,
                 reviewCount: provider.reviewCount,
-                starSize: 12,
+                starSize: 12.r,
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4.r),
               Row(
                 children: [
                   Icon(
                     Icons.location_on_outlined,
-                    size: 12,
+                    size: 12.r,
                     color: colors.onSurfaceVariant,
                   ),
-                  const SizedBox(width: 2),
+                  SizedBox(width: 2.r),
                   Expanded(
                     child: Text(
                       '${provider.city}, ${provider.country}',
                       style: text.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
-                        fontSize: 11,
+                        fontSize: 11.sp,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

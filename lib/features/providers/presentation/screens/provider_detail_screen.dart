@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
 import 'package:medifinder/core/utils/specialty_l10n.dart';
@@ -71,7 +72,7 @@ class _ProviderHeader extends StatelessWidget {
             child: ProviderAvatar(
               name: provider.name,
               imageUrl: provider.imageUrl,
-              radius: 52,
+              radius: 52.r,
             ),
           ),
           SizedBox(height: ext.spacingMd),
@@ -82,10 +83,6 @@ class _ProviderHeader extends StatelessWidget {
                 provider.name,
                 style: text.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
               ),
-              if (provider.isVerified) ...[
-                SizedBox(width: ext.spacingXs),
-                Icon(Icons.verified_rounded, color: colors.primary, size: 22),
-              ],
             ],
           ),
           SizedBox(height: ext.spacingXs),
@@ -110,7 +107,7 @@ class _ProviderHeader extends StatelessWidget {
           RatingStars(
             rating: provider.rating,
             reviewCount: provider.reviewCount,
-            starSize: 20,
+            starSize: 20.r,
           ),
         ],
       ),

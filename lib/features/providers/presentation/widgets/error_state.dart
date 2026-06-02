@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
 import 'package:medifinder/l10n/app_localizations.dart';
 
@@ -21,7 +22,7 @@ class ErrorState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline_rounded, size: 64, color: colors.error),
+            Icon(Icons.error_outline_rounded, size: 64.r, color: colors.error),
             SizedBox(height: ext.spacingMd),
             Text(
               l10n.errorStateTitle,

@@ -9,7 +9,6 @@ class ProviderEntity extends Equatable {
     required this.city,
     required this.rating,
     required this.reviewCount,
-    required this.isVerified,
     this.imageUrl,
     this.phone,
     this.website,
@@ -23,7 +22,6 @@ class ProviderEntity extends Equatable {
   final String city;
   final double rating;
   final int reviewCount;
-  final bool isVerified;
   final String? imageUrl;
   final String? phone;
   final String? website;
@@ -38,7 +36,6 @@ class ProviderEntity extends Equatable {
         city,
         rating,
         reviewCount,
-        isVerified,
         imageUrl,
         phone,
         website,

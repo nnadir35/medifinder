@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 @immutable
 class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
@@ -28,32 +29,32 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   final Color successColor;
   final Color warningColor;
 
-  static const light = AppThemeExtension(
-    spacingXs: 4,
-    spacingSm: 8,
-    spacingMd: 16,
-    spacingLg: 24,
-    spacingXl: 32,
-    radiusSm: 4,
-    radiusMd: 12,
-    radiusLg: 24,
-    cardColor: Color(0xFFF5F5F5),
-    successColor: Color(0xFF4CAF50),
-    warningColor: Color(0xFFFFC107),
+  static AppThemeExtension get light => AppThemeExtension(
+    spacingXs: 4.r,
+    spacingSm: 8.r,
+    spacingMd: 16.r,
+    spacingLg: 24.r,
+    spacingXl: 32.r,
+    radiusSm: 4.r,
+    radiusMd: 12.r,
+    radiusLg: 24.r,
+    cardColor: const Color(0xFFF5F5F5),
+    successColor: const Color(0xFF4CAF50),
+    warningColor: const Color(0xFFFFC107),
   );
 
-  static const dark = AppThemeExtension(
-    spacingXs: 4,
-    spacingSm: 8,
-    spacingMd: 16,
-    spacingLg: 24,
-    spacingXl: 32,
-    radiusSm: 4,
-    radiusMd: 12,
-    radiusLg: 24,
-    cardColor: Color(0xFF1E1E1E),
-    successColor: Color(0xFF66BB6A),
-    warningColor: Color(0xFFFFCA28),
+  static AppThemeExtension get dark => AppThemeExtension(
+    spacingXs: 4.r,
+    spacingSm: 8.r,
+    spacingMd: 16.r,
+    spacingLg: 24.r,
+    spacingXl: 32.r,
+    radiusSm: 4.r,
+    radiusMd: 12.r,
+    radiusLg: 24.r,
+    cardColor: const Color(0xFF1E1E1E),
+    successColor: const Color(0xFF66BB6A),
+    warningColor: const Color(0xFFFFCA28),
   );
 
   @override

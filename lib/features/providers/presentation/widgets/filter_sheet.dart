@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medifinder/l10n/app_localizations.dart';
 import 'package:medifinder/features/providers/domain/entities/provider_entity.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
@@ -105,11 +106,11 @@ class _FilterSheetState extends State<FilterSheet> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: ext.spacingSm),
                 child: Container(
-                  width: 40,
-                  height: 4,
+                  width: 40.r,
+                  height: 4.r,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(2.r),
                   ),
                 ),
               ),
