@@ -29,18 +29,6 @@ class ErrorState extends StatelessWidget {
               style: text.titleMedium?.copyWith(color: colors.error),
             ),
             SizedBox(height: ext.spacingSm),
-            Text(
-              message,
-              style: text.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: ext.spacingSm),
-            Text(
-              l10n.errorNetworkHint,
-              style: text.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: ext.spacingLg),
             OutlinedButton(onPressed: onRetry, child: Text(l10n.retryButton)),
           ],
         ),
