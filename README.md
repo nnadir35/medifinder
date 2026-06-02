@@ -1,39 +1,39 @@
-# MediFinder — Provider Search Case Study
+# MediFinder — Sağlık Uzmanı Arama Uygulaması
 
-MediFinder is a global healthcare discovery platform that connects patients with verified medical specialists worldwide. This case study implements a 3-screen provider search flow — list, filter, and detail — demonstrating Clean Architecture, Bloc state management, localization (EN/TR), and Material 3 theming in Flutter with no backend dependency.
+MediFinder, hastaları dünya genelindeki doğrulanmış tıp uzmanlarıyla buluşturan bir sağlık keşif platformudur. Bu proje; liste, filtre ve detay olmak üzere 3 ekranlı bir sağlayıcı arama akışı uygular. Backend bağımlılığı olmaksızın Clean Architecture, Bloc state yönetimi, lokalizasyon (TR/EN) ve Material 3 temayı Flutter ile gösterir.
 
 ---
 
-## Architecture
+## Mimari
 
-MediFinder uses **Clean Architecture** with three distinct layers:
+MediFinder, üç katmanlı **Clean Architecture** kullanır:
 
-- **Domain** — pure Dart entities (`ProviderEntity`, `FilterState`) and an abstract `ProviderRepository` interface. No Flutter imports. No knowledge of data sources or UI. This is the stable core that survives backend swaps unchanged.
-- **Data** — `ProviderModel` extends `ProviderEntity` and adds `fromMap`/`toMap` for future-proofing. `ProviderRepositoryImpl` fulfils the domain contract: it checks network connectivity via `connectivity_plus`, simulates an 800 ms network delay, then returns the mock dataset. All data is currently mocked via `mockProviders` (26 entries across UK and UAE).
-- **Presentation** — Bloc drives all state transitions. Screens and widgets are purely reactive and never mutate state directly.
+- **Domain** — saf Dart entity'leri (`ProviderEntity`, `FilterState`) ve soyut `ProviderRepository` arayüzü. Flutter import'u yoktur. Veri kaynakları veya UI hakkında bilgi sahibi değildir. Backend değişimlerine karşı kararlı çekirdektir.
+- **Data** — `ProviderModel`, `ProviderEntity`'yi genişletir ve gelecek kullanım için `fromMap`/`toMap` ekler. `ProviderRepositoryImpl`, domain sözleşmesini yerine getirir: `connectivity_plus` ile ağ bağlantısını kontrol eder, 800 ms ağ gecikmesi simüle eder, ardından mock veri setini döner. Tüm veriler şu an `mockProviders` üzerinden mock'lanmıştır (UK ve UAE'den 26 kayıt).
+- **Presentation** — Bloc tüm state geçişlerini yönetir. Ekranlar ve widget'lar tamamen reaktiftir, state'i doğrudan değiştirmez.
 
-**Why Clean Architecture?** Separation of concerns means each layer has a single reason to change. Swapping the mock data for a real REST API requires touching only the data layer. UI refactors never cascade into business logic. Each layer can be tested in isolation.
+**Neden Clean Architecture?** Her katmanın tek bir değişim nedeni vardır. Mock veriyi gerçek bir REST API ile değiştirmek yalnızca data katmanına dokunmayı gerektirir. UI refaktörleri asla iş mantığına yansımaz. Her katman bağımsız olarak test edilebilir.
 
-**Why Bloc over Cubit / Provider / Riverpod?**
+**Neden Bloc?**
 
-| Concern | Bloc advantage |
+| Konu | Bloc avantajı |
 |---|---|
-| Traceability | Every user action is an explicit `sealed class` event — you can log, replay, or test each one independently |
-| Exhaustive states | `sealed class ProviderState` forces exhaustive `switch` expressions at every call site — the Dart 3 compiler catches missing cases |
-| Unit testing | `bloc_test`'s `blocTest()` lets you seed any state, dispatch a single event, and assert the exact emitted states — no widget tree needed |
-| Scalability | Adding a feature (e.g. bookmarks) means adding one event subclass and one state subclass without touching existing handlers |
+| İzlenebilirlik | Her kullanıcı aksiyonu açık bir `sealed class` event'idir — bağımsız olarak loglanabilir, tekrar oynatılabilir veya test edilebilir |
+| Kapsamlı state'ler | `sealed class ProviderState`, her çağrı noktasında kapsamlı `switch` ifadelerini zorunlar — Dart 3 derleyicisi eksik case'leri yakalar |
+| Birim testi | `bloc_test`'in `blocTest()` fonksiyonu herhangi bir state'i seed'lemenize, tek bir event göndermenize ve tam olarak emit edilen state'leri assert etmenize olanak tanır — widget tree gerekmez |
+| Ölçeklenebilirlik | Yeni bir özellik eklemek (örn. yer imleri) mevcut handler'lara dokunmadan yalnızca bir event alt sınıfı ve bir state alt sınıfı eklemeyi gerektirir |
 
 ---
 
-## State Management
+## State Yönetimi
 
-**Event → Bloc → State flow:**
+**Event → Bloc → State akışı:**
 
 ```
-User action (e.g. selects a country filter in FilterSheet)
+Kullanıcı aksiyonu (örn. FilterSheet'te bir ülke filtresi seçer)
     │
     ▼
-ProviderFilterApplied(FilterState(...))   ← dispatched from FilterSheet
+ProviderFilterApplied(FilterState(...))   ← FilterSheet'ten gönderilir
     │
     ▼
 ProviderBloc._applyFilters(all, query, filter)
@@ -42,63 +42,83 @@ ProviderBloc._applyFilters(all, query, filter)
 emit(ProviderLoaded(filteredProviders: [...], activeFilter: ...))
     │
     ▼
-BlocBuilder rebuilds ListView + active filter chip row
+BlocBuilder, liste ve aktif filtre chip satırını yeniden oluşturur
 ```
 
-**Why `FilterState` is a plain data class inside `ProviderLoaded` (not a separate Bloc):**
+**`FilterState` neden `ProviderLoaded` içinde ayrı bir Bloc değil:**
 
-Filters have no async side effects — they are derived purely from user interaction and applied synchronously against the already-loaded provider list. Embedding `FilterState` inside `ProviderLoaded` means:
+Filtreler asenkron yan etkisi olmayan, yalnızca kullanıcı etkileşiminden türetilen ve zaten yüklenmiş sağlayıcı listesine senkron uygulanan işlemlerdir. `FilterState`'i `ProviderLoaded` içine gömmek şunu sağlar:
 
-- There is no valid state where a filter exists but providers haven't loaded — the types make this impossible.
-- A single `BlocBuilder` rebuilds the list and the filter badge atomically, with no Bloc-to-Bloc communication needed.
-- `FilterState.isEmpty` is a single source of truth for showing/hiding active filter UI.
-
----
-
-## Localization
-
-MediFinder supports **English and Turkish** via Flutter's built-in `flutter_localizations` / `intl` pipeline.
-
-- ARB source files live in `lib/l10n/` (`app_en.arb`, `app_tr.arb`).
-- Generated classes (`AppLocalizations`, `AppLocalizationsEn`, `AppLocalizationsTr`) are committed alongside the source.
-- A `SpecialtyL10n` extension on `AppLocalizations` maps raw English specialty strings (e.g. `'Cardiologist'`) to their localized equivalents at display time — the domain entities always store the canonical English key.
-- Language can be toggled at runtime via the globe icon in the app bar; the selection is preserved via a `ValueNotifier<Locale>` in `main.dart`.
+- Filtrenin var olduğu ama sağlayıcıların yüklenmediği geçersiz bir state yoktur — türler bunu imkânsız kılar.
+- Tek bir `BlocBuilder`, listeyi ve filtre badge'ini atomik olarak yeniden oluşturur; Bloc-to-Bloc iletişime gerek yoktur.
+- `FilterState.isEmpty`, aktif filtre UI'ını gösterip gizlemek için tek doğruluk kaynağıdır.
 
 ---
 
-## Folder Structure
+## Lokalizasyon
+
+MediFinder, Flutter'ın yerleşik `flutter_localizations` / `intl` pipeline'ı aracılığıyla **Türkçe ve İngilizce**'yi destekler.
+
+- ARB kaynak dosyaları `lib/l10n/` altındadır (`app_tr.arb`, `app_en.arb`).
+- Üretilen sınıflar (`AppLocalizations`, `AppLocalizationsEn`, `AppLocalizationsTr`) kaynak dosyalarla birlikte commit'lenir.
+- `AppLocalizations` üzerindeki `SpecialtyL10n` extension'ı, ham İngilizce uzmanlık string'lerini (örn. `'Cardiologist'`) görüntüleme anında yerelleştirilmiş karşılıklarına dönüştürür — domain entity'leri her zaman kanonik İngilizce anahtarı saklar. Bu sayede filtre ve arama mantığı locale'den bağımsız kalır.
+- Dil, uygulama başlığındaki küre ikonuyla çalışma zamanında değiştirilebilir; seçim `main.dart`'taki `ValueNotifier<Locale>` aracılığıyla korunur ve `SharedPreferences`'a kaydedilir.
+
+---
+
+## Arama ve Filtreleme
+
+- **Arama** yalnızca sağlayıcı **ismine** göre çalışır.
+- **Filtreler** (ülke, şehir, uzmanlık) arama ile bağımsız olarak birleşik uygulanır.
+- **Uzmanlık chip'leri** filtre sheet'inde `SpecialtyL10n` aracılığıyla lokalize edilmiş etiketlerle gösterilir; ancak seçim/eşleştirme mantığı kanonik İngilizce key üzerinden çalışır.
+- **Filtre chip satırı** (arama çubuğunun altında), aktif filtre kategorilerini gösterir; her kategoride X butonu ile tek kategorinin filtresini temizleyebilirsiniz.
+
+---
+
+## Responsive Grid
+
+Sağlayıcı listesi `SliverLayoutBuilder` kullanarak ekran genişliğine göre uyum sağlar:
+
+| Ekran genişliği | Sütun sayısı |
+|---|---|
+| ≤ 600 px | 2 sütun |
+| > 600 px | 3 sütun |
+
+---
+
+## Klasör Yapısı
 
 ```
 lib/
 ├── core/
 │   ├── error/
 │   │   ├── exceptions.dart           # ServerException, NetworkException, …
-│   │   └── failures.dart             # Failure subclasses (Equatable)
+│   │   └── failures.dart             # Failure alt sınıfları (Equatable)
 │   ├── router/
-│   │   └── app_router.dart           # GoRouter — 2 routes
+│   │   └── app_router.dart           # GoRouter — 2 route
 │   ├── theme/
 │   │   ├── app_theme.dart            # AppTheme.light / .dark (Material 3)
-│   │   └── app_theme_extension.dart  # Spacing/radius tokens + BuildContext ext
+│   │   └── app_theme_extension.dart  # Spacing/radius token'ları + BuildContext ext
 │   └── utils/
-│       ├── constants.dart            # AppConstants (SharedPrefs keys, pagination)
+│       ├── constants.dart            # AppConstants (SharedPrefs key'leri)
 │       ├── extensions.dart           # ContextX, StringX, NullableStringX
-│       └── specialty_l10n.dart       # SpecialtyL10n extension on AppLocalizations
+│       └── specialty_l10n.dart       # AppLocalizations üzerinde SpecialtyL10n extension'ı
 │
 ├── features/
 │   └── providers/
 │       ├── data/
 │       │   ├── mock/
-│       │   │   └── mock_providers.dart         # 26 ProviderModel entries (UK & UAE)
+│       │   │   └── mock_providers.dart         # 26 ProviderModel kaydı (UK & UAE)
 │       │   ├── models/
 │       │   │   └── provider_model.dart         # fromMap / toMap
 │       │   └── repositories/
-│       │       └── provider_repository_impl.dart  # connectivity check + delay
+│       │       └── provider_repository_impl.dart  # bağlantı kontrolü + gecikme
 │       ├── domain/
 │       │   ├── entities/
-│       │   │   ├── provider_entity.dart        # Core entity (Equatable)
-│       │   │   └── filter_state.dart           # Filter data class (Equatable)
+│       │   │   ├── provider_entity.dart        # Çekirdek entity (Equatable)
+│       │   │   └── filter_state.dart           # Filtre data class'ı (Equatable)
 │       │   └── repositories/
-│       │       └── provider_repository.dart    # abstract interface
+│       │       └── provider_repository.dart    # soyut arayüz
 │       └── presentation/
 │           ├── bloc/
 │           │   ├── provider_bloc.dart
@@ -108,45 +128,45 @@ lib/
 │           │   ├── provider_list_screen.dart
 │           │   └── provider_detail_screen.dart
 │           └── widgets/
-│               ├── provider_avatar.dart        # CachedNetworkImage + initials fallback
-│               ├── rating_stars.dart           # filled / half / empty stars
-│               ├── provider_card.dart          # Hero + card layout
-│               ├── filter_chip_group.dart      # Reusable chip group
-│               ├── filter_sheet.dart           # DraggableScrollableSheet with live result count
-│               ├── loading_shimmer.dart        # Theme-aware animated shimmer
-│               ├── empty_state.dart            # No results UI
-│               └── error_state.dart            # Error + retry UI
+│               ├── provider_avatar.dart        # CachedNetworkImage + baş harf fallback
+│               ├── rating_stars.dart           # dolu / yarım / boş yıldız
+│               ├── provider_card.dart          # Hero + kart düzeni
+│               ├── filter_chip_group.dart      # Yeniden kullanılabilir chip grubu
+│               ├── filter_sheet.dart           # Canlı sonuç sayılı DraggableScrollableSheet
+│               ├── loading_shimmer.dart        # Tema uyumlu animasyonlu shimmer
+│               ├── empty_state.dart            # Sonuç yok UI'ı
+│               └── error_state.dart            # Hata + yeniden dene UI'ı
 │
 ├── l10n/
-│   ├── app_en.arb                    # English strings
-│   ├── app_tr.arb                    # Turkish strings
-│   ├── app_localizations.dart        # Generated base class
-│   ├── app_localizations_en.dart     # Generated EN delegate
-│   └── app_localizations_tr.dart     # Generated TR delegate
+│   ├── app_tr.arb                    # Türkçe string'ler
+│   ├── app_en.arb                    # İngilizce string'ler
+│   ├── app_localizations.dart        # Üretilen temel sınıf
+│   ├── app_localizations_tr.dart     # Üretilen TR delegate
+│   └── app_localizations_en.dart     # Üretilen EN delegate
 │
 └── main.dart   # MediFinderApp — BlocProvider + GoRouter + ValueNotifier<ThemeMode> + ValueNotifier<Locale>
 ```
 
 ---
 
-## How to Run
+## Nasıl Çalıştırılır
 
 ```bash
 flutter pub get
 flutter run
 ```
 
-Requires Flutter 3.x with Dart 3.x (tested on Flutter 3.29.2).
+Flutter 3.x ve Dart 3.x gerektirir (Flutter 3.44.0 ile test edilmiştir).
 
 ---
 
-## Key Technical Decisions
+## Temel Teknik Kararlar
 
-- **GoRouter** — Declarative routing with type-safe `extra` for passing `ProviderEntity` to the detail screen without re-fetching. Supports deep linking and web out of the box.
-- **Hero animation** — `provider.id` is used as the Hero tag on `ProviderAvatar` in both `ProviderCard` and `ProviderDetailScreen`, giving a natural shared-element transition with zero extra code.
-- **Null safety** — All nullable fields (`phone`, `website`, `bio`, `imageUrl`) are `String?`. Entire UI sections (contact, bio) are hidden when null rather than showing empty containers.
-- **Theme token system** — `AppThemeExtension` spacing and radius tokens are consumed via `context.appTheme` throughout all feature code. Zero hardcoded padding values exist in the feature layer.
-- **Sealed classes** — Both `ProviderEvent` and `ProviderState` are `sealed`. Every `switch` on `ProviderState` in the build methods is exhaustive — the Dart 3 compiler enforces completeness and will error if a new subclass is added without handling it everywhere.
-- **Repository pattern** — `ProviderRepository` is a domain-layer interface; `ProviderRepositoryImpl` (data layer) checks connectivity via `connectivity_plus` before returning data, throwing a typed `NetworkException` on failure. The Bloc catches this and emits `ProviderError` with a localized hint.
-- **Live filter preview** — `FilterSheet` computes the result count in real time as the user toggles chips, so the "Show N Results" CTA always reflects the current draft filter without committing it to the Bloc.
-- **Localization** — All user-visible strings are externalised to ARB files. Specialty names are stored as canonical English keys in the domain layer and localized at render time via `SpecialtyL10n`, keeping the filter/search logic locale-independent.
+- **GoRouter** — `ProviderEntity`'yi detay ekranına yeniden fetch etmeden type-safe `extra` ile aktarmak için bildirimsel yönlendirme. Derin bağlantı ve web desteği kutudan çıkar.
+- **Hero animasyonu** — `provider.id`, hem `ProviderCard` hem de `ProviderDetailScreen`'deki `ProviderAvatar`'da Hero tag'i olarak kullanılır; sıfır ekstra kod ile doğal paylaşımlı element geçişi sağlanır.
+- **Null safety** — Tüm nullable alanlar (`phone`, `website`, `bio`, `imageUrl`) `String?` tipindedir. Boş container göstermek yerine tüm UI bölümleri (iletişim, biyografi) null olduğunda gizlenir.
+- **Tema token sistemi** — `AppThemeExtension` spacing ve radius token'ları, tüm özellik kodunda `context.appTheme` aracılığıyla kullanılır. Özellik katmanında hardcoded padding değeri yoktur.
+- **Sealed class'lar** — Hem `ProviderEvent` hem de `ProviderState` `sealed`'dır. Build metodlarındaki `ProviderState` üzerindeki her `switch` kapsamlıdır — Dart 3 derleyicisi bütünlüğü zorunlar ve yeni bir alt sınıf eklenmesi durumunda hata verir.
+- **Repository pattern** — `ProviderRepository` domain katmanı arayüzüdür; `ProviderRepositoryImpl` (data katmanı), veri döndürmeden önce `connectivity_plus` ile bağlantıyı kontrol eder, başarısızlıkta typed `NetworkException` fırlatır. Bloc bunu yakalar ve yerelleştirilmiş ipucuyla `ProviderError` emit eder.
+- **Canlı filtre önizlemesi** — `FilterSheet`, kullanıcı chip'leri değiştirdikçe sonuç sayısını gerçek zamanlı hesaplar; "N Sonucu Göster" butonu her zaman Bloc'a commit edilmeden mevcut taslak filtreyi yansıtır.
+- **Lokalizasyon** — Tüm kullanıcıya görünür string'ler ARB dosyalarına aktarılmıştır. Uzmanlık isimleri domain katmanında kanonik İngilizce key olarak saklanır ve `SpecialtyL10n` aracılığıyla render anında yerelleştirilir; bu sayede filtre/arama mantığı locale'den bağımsız kalır.
