@@ -429,7 +429,6 @@ class _ProviderListScreenState extends State<ProviderListScreen> {
                         crossAxisCount: crossAxisCount,
                         crossAxisSpacing: spacing,
                         mainAxisSpacing: spacing,
-                        childAspectRatio: 0.72,
                       ),
                       itemCount: filteredProviders.length,
                       itemBuilder:

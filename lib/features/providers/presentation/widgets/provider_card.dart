@@ -8,11 +8,7 @@ import 'package:medifinder/features/providers/presentation/widgets/rating_stars.
 import 'package:medifinder/l10n/app_localizations.dart';
 
 class ProviderCard extends StatelessWidget {
-  const ProviderCard({
-    super.key,
-    required this.provider,
-    required this.onTap,
-  });
+  const ProviderCard({super.key, required this.provider, required this.onTap});
 
   final ProviderEntity provider;
   final VoidCallback onTap;
@@ -31,7 +27,6 @@ class ProviderCard extends StatelessWidget {
           padding: EdgeInsets.all(ext.spacingMd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
             children: [
               Center(
                 child: Hero(
@@ -61,7 +56,9 @@ class ProviderCard extends StatelessWidget {
               ),
               SizedBox(height: 2.r),
               Text(
-                AppLocalizations.of(context)!.localizeSpecialty(provider.specialty),
+                AppLocalizations.of(
+                  context,
+                )!.localizeSpecialty(provider.specialty),
                 style: text.bodySmall?.copyWith(
                   color: colors.primary,
                   fontWeight: FontWeight.w500,
