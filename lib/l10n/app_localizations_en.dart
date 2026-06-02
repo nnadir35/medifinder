@@ -27,7 +27,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tooltipLanguage => 'Change language';
 
   @override
-  String get searchHint => 'Search by name or specialty…';
+  String get searchHint => 'Search by name…';
 
   @override
   String get filtersLabel => 'Filters';

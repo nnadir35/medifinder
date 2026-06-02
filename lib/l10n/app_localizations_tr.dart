@@ -27,7 +27,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get tooltipLanguage => 'Dili değiştir';
 
   @override
-  String get searchHint => 'İsim veya uzmanlık ara…';
+  String get searchHint => 'İsme göre ara…';
 
   @override
   String get filtersLabel => 'Filtreler';

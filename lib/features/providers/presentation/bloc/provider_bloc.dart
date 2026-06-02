@@ -125,9 +125,7 @@ class ProviderBloc extends Bloc<ProviderEvent, ProviderState> {
   ) {
     return all.where((p) {
       final q = query.toLowerCase();
-      final matchesSearch = q.isEmpty ||
-          p.name.toLowerCase().contains(q) ||
-          p.specialty.toLowerCase().contains(q);
+      final matchesSearch = q.isEmpty || p.name.toLowerCase().contains(q);
 
       final matchesCountry = filter.selectedCountries.isEmpty ||
           filter.selectedCountries.contains(p.country);

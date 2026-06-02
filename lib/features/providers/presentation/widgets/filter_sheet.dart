@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medifinder/l10n/app_localizations.dart';
+import 'package:medifinder/core/utils/specialty_l10n.dart';
 import 'package:medifinder/features/providers/domain/entities/provider_entity.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
 import 'package:medifinder/features/providers/data/mock/mock_providers.dart';
@@ -18,10 +19,7 @@ int _countMatchingProviders({
 }) {
   return providers.where((p) {
     final query = searchQuery.toLowerCase();
-    final matchesSearch =
-        query.isEmpty ||
-        p.name.toLowerCase().contains(query) ||
-        p.specialty.toLowerCase().contains(query);
+    final matchesSearch = query.isEmpty || p.name.toLowerCase().contains(query);
     final matchesCountry =
         filter.selectedCountries.isEmpty ||
         filter.selectedCountries.contains(p.country);
@@ -178,6 +176,7 @@ class _FilterSheetState extends State<FilterSheet> {
                       title: l10n.filterSpecialtyLabel,
                       options: _specialties,
                       selected: _draft.selectedSpecialties,
+                      labelOf: (s) => l10n.localizeSpecialty(s),
                       onToggle:
                           (v) => _toggle(
                             v,

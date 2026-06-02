@@ -6,7 +6,7 @@
   "tooltipLightMode": "Açık tema",
   "tooltipDarkMode": "Koyu tema",
   "tooltipLanguage": "Dili değiştir",
-  "searchHint": "İsim veya uzmanlık ara…",
+  "searchHint": "İsme göre ara…",
   "filtersLabel": "Filtreler",
   "resultsCount": "{count} sonuç",
   "providerNotFound": "Sağlayıcı bulunamadı.",

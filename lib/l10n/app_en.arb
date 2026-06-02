@@ -6,7 +6,7 @@
   "tooltipLightMode": "Light mode",
   "tooltipDarkMode": "Dark mode",
   "tooltipLanguage": "Change language",
-  "searchHint": "Search by name or specialty…",
+  "searchHint": "Search by name…",
   "filtersLabel": "Filters",
   "resultsCount": "{count} results",
   "@resultsCount": {
