@@ -5,6 +5,7 @@ import 'package:medifinder/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medifinder/core/theme/app_theme_extension.dart';
 import 'package:medifinder/core/utils/constants.dart';
+import 'package:medifinder/core/utils/specialty_l10n.dart';
 import 'package:medifinder/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -247,7 +248,9 @@ class _ProviderListScreenState extends State<ProviderListScreen> {
             categoryChips.add((label: label, type: 'city'));
           }
           if (filter.selectedSpecialties.isNotEmpty) {
-            final all = filter.selectedSpecialties;
+            final all = filter.selectedSpecialties
+                .map((s) => l10n.localizeSpecialty(s))
+                .toList();
             final label =
                 all.length == 1
                     ? all.first
